@@ -3,10 +3,20 @@
 %{
 #include <stdio.h>
 #include <ctype.h>
-int lno = 1, spaces=0;
+int lno = 1;
 #define MAX_STR_CONST 256
 char string_buf[MAX_STR_CONST], comment_buf[MAX_STR_CONST];
 char *string_buf_ptr, *comment_buf_ptr;
+
+#define MAX_SIZE 1000
+int stack[MAX_SIZE];
+int top = -1;
+int spaces = 0, indent, dedent;
+
+void push(int x) {
+    stack[++top] = x;
+}
+
 %}
 
 digit   [0-9]
@@ -22,12 +32,13 @@ newline \n
 %x SINGLE_STRING
 %x COMMENT_SINGLE
 %x COMMENT_MULTI
+%x TRIPLE_COMMENT
 
 %%
-
-{newline}{ws}  {
-    spaces = 0;
+{newline}{ws} {
     lno++;
+    printf("line%d ---------\n", lno);
+    spaces = 0;
     for(int i = 0; i < yyleng; i++){
         if (yytext[i] == ' ') {
             spaces++;
@@ -35,9 +46,30 @@ newline \n
             spaces+=8;
         }
     }
-    printf("line%d, Indentation: %d\n", lno, spaces);
+    if(top == -1)   push(0);
+
+    if(spaces > stack[top]){
+        indent = spaces - stack[top];
+        push(spaces);
+        printf("line%d, INDENT by %d\n", lno, indent);
+    }
+    else if(spaces < stack[top]){
+        dedent = stack[top] - spaces;
+        push(spaces);
+        printf("line%d, DEDENT by %d\n", lno, dedent);
+    }
 }
-{newline}         {lno++; spaces=0;}
+
+
+{newline}         {
+    lno++;
+    printf("line%d ---------\n", lno);
+    if(stack[top] > 0){
+        printf("line%d, DEDENT by %d\n", lno, stack[top]);
+        push(0);
+    }    
+}
+
 {ws}                /*ignore*/
 {int}              { printf("line%d, int: %s \n", lno, yytext); }
 {float}            { printf("line%d, float: %s \n", lno, yytext); }
@@ -59,11 +91,24 @@ newline \n
 
 "["|"]"|"{"|"}"|"("|")" { printf("line%d, parenthesis: %s \n", lno, yytext); }
 
+\"\"\"      { comment_buf_ptr = comment_buf; BEGIN(TRIPLE_COMMENT); }
+<TRIPLE_COMMENT>{
+     [^\"\n]+  {
+        char *yptr = yytext;
+        while ( *yptr )
+            *comment_buf_ptr++ = *yptr++;        
+    }
+    \n         { *comment_buf_ptr++ = '\n'; lno++; }        
+    \"\"\"     {*comment_buf_ptr = '\0'; printf("line%d, triple comment: %s\n", lno, comment_buf); BEGIN(INITIAL); }
+    \"\"    {*comment_buf_ptr++ = '\"'; *comment_buf_ptr++ = '\"';}
+    \"    {*comment_buf_ptr++ = '\"';}
+}
+
 \"        { string_buf_ptr = string_buf; BEGIN(DOUBLE_STRING); }    
 
 <DOUBLE_STRING>{
     \"  {*string_buf_ptr = '\0'; printf("line%d, DOUBLE STRING: %s\n", lno, string_buf); BEGIN(INITIAL);} 
-    \n  {printf("error in line %d\n", lno);}
+    \n  {printf("error in line %d\n", lno); lno++; BEGIN(INITIAL);}
     \\n  {*string_buf_ptr++ = '\n';}
     \\t  {*string_buf_ptr++ = '\t';}
     \\r  {*string_buf_ptr++ = '\r';}
@@ -80,7 +125,7 @@ newline \n
 \'        { string_buf_ptr = string_buf; BEGIN(SINGLE_STRING); }    
 <SINGLE_STRING>{
     \'  {*string_buf_ptr = '\0'; printf("line%d, SINGLE STRING: %s\n", lno, string_buf); BEGIN(INITIAL);}
-    \n  {printf("line%d, ERROR: new line in string\n", lno);}
+    \n  {printf("line%d, ERROR: new line in string\n", lno); lno++; BEGIN(INITIAL);}
     \\n  {*string_buf_ptr++ = '\n';}
     \\t  {*string_buf_ptr++ = '\t';}
     \\r  {*string_buf_ptr++ = '\r';}
