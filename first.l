@@ -17,28 +17,7 @@ void push(int x) {
     stack[++top] = x;
 }
 
-%}
-
-digit   [0-9]
-int     [-+]?{digit}+
-float   [-+]?({digit}*\.?{digit}+|{digit}+\.)([eE][-+]?{digit}+)?  
-letter  [a-zA-Z]
-id      ({letter}|_)([{letter}{digit}_])*
-keyword   "main"|"True"|"False"|"None"|"and"|"as"|"assert"|"async"|"await"|"break"|"class"|"continue"|"def"|"del"|"elif"|"else"|"except"|"finally"|"for"|"from"|"global"|"if"|"import"|"in"|"is"|"lambda"|"nonlocal"|"not"|"or"|"pass"|"raise"|"return"|"try"|"while"|"with"|"yield"|"main"|"case"
-ws  [ \t]+
-newline \n
-
-%x STRING_DOUBLE
-%x STRING_SINGLE
-%x STRING_TRIPLE
-%x COMMENT_SINGLE
-%x COMMENT_MULTI
-%x COMMENT_TRIPLE
-
-%%
-{newline}{ws} {
-    lno++;
-    printf("line%d ---------\n", lno);
+void checkIndent(int yyleng, char* yytext){
     spaces = 0;
     for(int i = 0; i < yyleng; i++){
         if (yytext[i] == ' ') {
@@ -61,10 +40,33 @@ newline \n
     }
 }
 
+%}
+
+digit   [0-9]
+int     [-+]?{digit}+
+float   [-+]?({digit}*\.?{digit}+|{digit}+\.)([eE][-+]?{digit}+)?  
+letter  [a-zA-Z]
+id      ({letter}|_)([{letter}{digit}_])*
+keyword   "main"|"True"|"False"|"None"|"and"|"as"|"assert"|"async"|"await"|"break"|"class"|"continue"|"def"|"del"|"elif"|"else"|"except"|"finally"|"for"|"from"|"global"|"if"|"import"|"in"|"is"|"lambda"|"nonlocal"|"not"|"or"|"pass"|"raise"|"return"|"try"|"while"|"with"|"yield"|"main"|"case"
+ws  [ \t]+
+newline \n
+
+%x STRING_DOUBLE
+%x STRING_SINGLE
+%x STRING_TRIPLE
+%x COMMENT_SINGLE
+%x COMMENT_MULTI
+%x COMMENT_TRIPLE
+%x white_space
+
+%%
+{newline}{ws} {
+    lno++;
+    checkIndent(yyleng, yytext);
+}
 
 {newline}         {
     lno++;
-    printf("line%d ---------\n", lno);
     if(stack[top] > 0){
         printf("line%d, DEDENT by %d\n", lno, stack[top]);
         push(0);
@@ -104,7 +106,7 @@ newline \n
 <STRING_DOUBLE>{
     \"  {*string_buf_ptr = '\0'; printf("line%d, DOUBLE STRING: %s\n", lno, string_buf); BEGIN(INITIAL);} 
     \\\\ {*string_buf_ptr++ = '\\';}
-    \\\n    {*string_buf_ptr = '\n'; printf("###\n");}
+    \\\n    {*string_buf_ptr = '\n'; }
     \n  {printf("error in line %d\n", lno); lno++; BEGIN(INITIAL);}
     \\n  {*string_buf_ptr++ = '\n';}
     \\t  {*string_buf_ptr++ = '\t';}
@@ -123,7 +125,7 @@ newline \n
 <STRING_SINGLE>{
     \'  {*string_buf_ptr = '\0'; printf("line%d, SINGLE STRING: %s\n", lno, string_buf); BEGIN(INITIAL);}
     \\\\ {*string_buf_ptr++ = '\\';}
-    \\\n    {*string_buf_ptr = '\n'; printf("###\n");}
+    \\\n    {*string_buf_ptr = '\n'; }
     \n  {printf("error in line %d\n", lno); lno++; BEGIN(INITIAL);}
     \\n  {*string_buf_ptr++ = '\n';}
     \\t  {*string_buf_ptr++ = '\t';}
@@ -141,7 +143,7 @@ newline \n
 <STRING_TRIPLE>{
     \"\"\"  {*string_buf_ptr = '\0'; printf("line%d, TRIPLE STRING: %s\n", lno, string_buf); BEGIN(INITIAL);} 
     \\\\ {*string_buf_ptr++ = '\\';}
-    \\\n    {*string_buf_ptr = '\n'; printf("###\n");}
+    \\\n    {*string_buf_ptr = '\n'; }
     \n  {printf("error in line %d\n", lno); lno++; BEGIN(INITIAL);}
     \\n  {*string_buf_ptr++ = '\n';}
     \\t  {*string_buf_ptr++ = '\t';}
@@ -174,7 +176,12 @@ newline \n
         while ( *yptr )
             *comment_buf_ptr++ = *yptr++;        
     }
-    \n      {*comment_buf_ptr = '\0'; printf("line%d, single line comment: %s\n", lno, comment_buf); lno++; BEGIN(INITIAL); }
+    \n      {*comment_buf_ptr = '\0'; printf("line%d, single line comment: %s\n", lno, comment_buf); lno++; BEGIN(white_space); }
+}
+
+<white_space>{
+    {ws}    {checkIndent(yyleng, yytext);}
+    .       {BEGIN(INITIAL);}
 }
 
 <COMMENT_MULTI>{
