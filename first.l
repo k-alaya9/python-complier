@@ -28,11 +28,12 @@ keyword   "main"|"True"|"False"|"None"|"and"|"as"|"assert"|"async"|"await"|"brea
 ws  [ \t]+
 newline \n
 
-%x DOUBLE_STRING
-%x SINGLE_STRING
+%x STRING_DOUBLE
+%x STRING_SINGLE
+%x STRING_TRIPLE
 %x COMMENT_SINGLE
 %x COMMENT_MULTI
-%x TRIPLE_COMMENT
+%x COMMENT_TRIPLE
 
 %%
 {newline}{ws} {
@@ -73,7 +74,16 @@ newline \n
 {ws}                /*ignore*/
 {int}              { printf("line%d, int: %s \n", lno, yytext); }
 {float}            { printf("line%d, float: %s \n", lno, yytext); }
-{keyword}          { printf("line%d, keyword: %s \n", lno, yytext); }
+{keyword}[ \t]*\"\"\"  { printf("line%d, keyword: %.*s\n", lno, (int)(yyleng - 3), yytext); string_buf_ptr = string_buf; BEGIN(STRING_TRIPLE); }
+{keyword}              { printf("line%d, keyword: %s \n", lno, yytext); }
+"="[ \t]*\"\"\"        { printf("line%d, assignment operator: = \n", lno); string_buf_ptr = string_buf; BEGIN(STRING_TRIPLE);}
+
+\"\"\"      { comment_buf_ptr = comment_buf; BEGIN(COMMENT_TRIPLE); }
+\"        { string_buf_ptr = string_buf; BEGIN(STRING_DOUBLE); }    
+\'\'\'      { comment_buf_ptr = comment_buf; BEGIN(COMMENT_MULTI); }
+\'        { string_buf_ptr = string_buf; BEGIN(STRING_SINGLE); }    
+#          { comment_buf_ptr = comment_buf; BEGIN(COMMENT_SINGLE); }
+
 {id}*              { printf("line%d, identifier: %s \n", lno, yytext); }
 
 ">"|"<"|"<="|">="  { printf("line%d, relation operator: %s \n",lno, yytext); }
@@ -88,26 +98,13 @@ newline \n
 "%"                { printf("line%d, modulus operator: %s \n", lno, yytext); }
 "**"               { printf("line%d, exponentiation operator: %s \n", lno, yytext); }
 
-
 "["|"]"|"{"|"}"|"("|")" { printf("line%d, parenthesis: %s \n", lno, yytext); }
 
-\"\"\"      { comment_buf_ptr = comment_buf; BEGIN(TRIPLE_COMMENT); }
-<TRIPLE_COMMENT>{
-     [^\"\n]+  {
-        char *yptr = yytext;
-        while ( *yptr )
-            *comment_buf_ptr++ = *yptr++;        
-    }
-    \n         { *comment_buf_ptr++ = '\n'; lno++; }        
-    \"\"\"     {*comment_buf_ptr = '\0'; printf("line%d, triple comment: %s\n", lno, comment_buf); BEGIN(INITIAL); }
-    \"\"    {*comment_buf_ptr++ = '\"'; *comment_buf_ptr++ = '\"';}
-    \"    {*comment_buf_ptr++ = '\"';}
-}
 
-\"        { string_buf_ptr = string_buf; BEGIN(DOUBLE_STRING); }    
-
-<DOUBLE_STRING>{
+<STRING_DOUBLE>{
     \"  {*string_buf_ptr = '\0'; printf("line%d, DOUBLE STRING: %s\n", lno, string_buf); BEGIN(INITIAL);} 
+    \\\\ {*string_buf_ptr++ = '\\';}
+    \\\n    {*string_buf_ptr = '\n'; printf("###\n");}
     \n  {printf("error in line %d\n", lno); lno++; BEGIN(INITIAL);}
     \\n  {*string_buf_ptr++ = '\n';}
     \\t  {*string_buf_ptr++ = '\t';}
@@ -122,10 +119,12 @@ newline \n
     }
 }
 
-\'        { string_buf_ptr = string_buf; BEGIN(SINGLE_STRING); }    
-<SINGLE_STRING>{
+
+<STRING_SINGLE>{
     \'  {*string_buf_ptr = '\0'; printf("line%d, SINGLE STRING: %s\n", lno, string_buf); BEGIN(INITIAL);}
-    \n  {printf("line%d, ERROR: new line in string\n", lno); lno++; BEGIN(INITIAL);}
+    \\\\ {*string_buf_ptr++ = '\\';}
+    \\\n    {*string_buf_ptr = '\n'; printf("###\n");}
+    \n  {printf("error in line %d\n", lno); lno++; BEGIN(INITIAL);}
     \\n  {*string_buf_ptr++ = '\n';}
     \\t  {*string_buf_ptr++ = '\t';}
     \\r  {*string_buf_ptr++ = '\r';}
@@ -139,7 +138,36 @@ newline \n
     }
 }
 
-#          { comment_buf_ptr = comment_buf; BEGIN(COMMENT_SINGLE); }
+<STRING_TRIPLE>{
+    \"\"\"  {*string_buf_ptr = '\0'; printf("line%d, TRIPLE STRING: %s\n", lno, string_buf); BEGIN(INITIAL);} 
+    \\\\ {*string_buf_ptr++ = '\\';}
+    \\\n    {*string_buf_ptr = '\n'; printf("###\n");}
+    \n  {printf("error in line %d\n", lno); lno++; BEGIN(INITIAL);}
+    \\n  {*string_buf_ptr++ = '\n';}
+    \\t  {*string_buf_ptr++ = '\t';}
+    \\r  {*string_buf_ptr++ = '\r';}
+    \\b  {*string_buf_ptr++ = '\b';}
+    \\f  {*string_buf_ptr++ = '\f';}
+    \\\" {*string_buf_ptr++ = '\"';} 
+    [^\\\n\"]+  {
+        char *yptr = yytext;
+        while ( *yptr )
+            *string_buf_ptr++ = *yptr++;        
+    }
+}
+
+<COMMENT_TRIPLE>{
+     [^\"\n]+  {
+        char *yptr = yytext;
+        while ( *yptr )
+            *comment_buf_ptr++ = *yptr++;        
+    }
+    \n         { *comment_buf_ptr++ = '\n'; lno++; }        
+    \"\"\"     {*comment_buf_ptr = '\0'; printf("line%d, triple comment: %s\n", lno, comment_buf); BEGIN(INITIAL); }
+    \"\"    {*comment_buf_ptr++ = '\"'; *comment_buf_ptr++ = '\"';}
+    \"    {*comment_buf_ptr++ = '\"';}
+}
+
 <COMMENT_SINGLE>{
     [^\n]+  {
         char *yptr = yytext;
@@ -149,7 +177,6 @@ newline \n
     \n      {*comment_buf_ptr = '\0'; printf("line%d, single line comment: %s\n", lno, comment_buf); lno++; BEGIN(INITIAL); }
 }
 
-\'\'\'      { comment_buf_ptr = comment_buf; BEGIN(COMMENT_MULTI); }
 <COMMENT_MULTI>{
     [^\'\n]+  {
         char *yptr = yytext;
