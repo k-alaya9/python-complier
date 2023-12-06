@@ -669,11 +669,17 @@ char *yytext;
     ////////////////////
 #define DOUBLE_STRING 1
 
-#define SINGLE_STRING 2
+#define STRING_SINGLE 2
+
+#define STRING_TRIPLE 3
 
 #define TRIPLE_STRING 3
 
-#define COMMENT_MULTI 4
+#define COMMENT_MULTI 5
+
+#define COMMENT_TRIPLE 6
+
+#define white_space 7
 
 #define COMMENT_TRIPLE 5
 
@@ -1119,6 +1125,7 @@ YY_RULE_SETUP
 #line 245 "first.l"
 { yylval.str_val = strdup(yytext); return CONTINUE ;  }
 	YY_BREAK
+
 case 27:
 YY_RULE_SETUP
 #line 246 "first.l"
@@ -1144,42 +1151,42 @@ YY_RULE_SETUP
 #line 250 "first.l"
 { yylval.str_val = strdup(yytext); return ELIF ;  }
 	YY_BREAK
-case 32:
+case 39:
 YY_RULE_SETUP
 #line 251 "first.l"
 { yylval.str_val = strdup(yytext); return ELSE ;  }
 	YY_BREAK
-case 33:
+case 40:
 YY_RULE_SETUP
 #line 252 "first.l"
 { yylval.str_val = strdup(yytext); return EXCEPT ; }
 	YY_BREAK
-case 34:
+case 43:
 YY_RULE_SETUP
 #line 253 "first.l"
 { yylval.str_val = strdup(yytext); return FINALLY ;  }
 	YY_BREAK
-case 35:
+case 44:
 YY_RULE_SETUP
 #line 254 "first.l"
 { yylval.str_val = strdup(yytext); return FROM ;  }
 	YY_BREAK
-case 36:
+case 45:
 YY_RULE_SETUP
 #line 255 "first.l"
 { yylval.str_val = strdup(yytext); return GLOBAL ;  }
 	YY_BREAK
-case 37:
+case 46:
 YY_RULE_SETUP
 #line 256 "first.l"
 { yylval.str_val = strdup(yytext); return IF ; }
 	YY_BREAK
-case 38:
+case 47:
 YY_RULE_SETUP
 #line 257 "first.l"
 { yylval.str_val = strdup(yytext); return IMPORT ;  }
 	YY_BREAK
-case 39:
+case 48:
 YY_RULE_SETUP
 #line 258 "first.l"
 { yylval.str_val = strdup(yytext); return IN ;}
