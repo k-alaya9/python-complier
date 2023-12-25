@@ -673,7 +673,7 @@ char *yytext;
 
 #define TRIPLE_STRING 3
 
-#define COMMENT_MULTI 4
+#define COMMENT_SINGLE 4
 
 #define COMMENT_TRIPLE 5
 
@@ -683,7 +683,7 @@ char *yytext;
 
 #define DEDENTSTATE 8
 
-#line 687 "lex.yy.c"
+#line 618 "lex.yy.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -1141,448 +1141,37 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 250 "first.l"
-{ yylval.str_val = strdup(yytext); return ELIF ;  }
-	YY_BREAK
-case 32:
-YY_RULE_SETUP
-#line 251 "first.l"
-{ yylval.str_val = strdup(yytext); return ELSE ;  }
-	YY_BREAK
-case 33:
-YY_RULE_SETUP
-#line 252 "first.l"
-{ yylval.str_val = strdup(yytext); return EXCEPT ; }
-	YY_BREAK
-case 34:
-YY_RULE_SETUP
-#line 253 "first.l"
-{ yylval.str_val = strdup(yytext); return FINALLY ;  }
-	YY_BREAK
-case 35:
-YY_RULE_SETUP
-#line 254 "first.l"
-{ yylval.str_val = strdup(yytext); return FROM ;  }
-	YY_BREAK
-case 36:
-YY_RULE_SETUP
-#line 255 "first.l"
-{ yylval.str_val = strdup(yytext); return GLOBAL ;  }
-	YY_BREAK
-case 37:
-YY_RULE_SETUP
-#line 256 "first.l"
-{ yylval.str_val = strdup(yytext); return IF ; }
-	YY_BREAK
-case 38:
-YY_RULE_SETUP
-#line 257 "first.l"
-{ yylval.str_val = strdup(yytext); return IMPORT ;  }
-	YY_BREAK
-case 39:
-YY_RULE_SETUP
-#line 258 "first.l"
-{ yylval.str_val = strdup(yytext); return IN ;}
-	YY_BREAK
-case 40:
-YY_RULE_SETUP
-#line 259 "first.l"
-{ yylval.str_val = strdup(yytext); return IS ;  }
-	YY_BREAK
-case 41:
-YY_RULE_SETUP
-#line 260 "first.l"
-{ yylval.str_val = strdup(yytext); return LAMDA ;  }
-	YY_BREAK
-case 42:
-YY_RULE_SETUP
-#line 261 "first.l"
-{ yylval.str_val = strdup(yytext); return NONLOCAL ;  }
-	YY_BREAK
-case 43:
-YY_RULE_SETUP
-#line 262 "first.l"
-{ yylval.str_val = strdup(yytext); return NOT ;  }
-	YY_BREAK
-case 44:
-YY_RULE_SETUP
-#line 263 "first.l"
-{ yylval.str_val = strdup(yytext); return OR ;  }
-	YY_BREAK
-case 45:
-YY_RULE_SETUP
-#line 264 "first.l"
-{ yylval.str_val = strdup(yytext); return PASS ;  }
-	YY_BREAK
-case 46:
-YY_RULE_SETUP
-#line 265 "first.l"
-{ yylval.str_val = strdup(yytext); return RAISE ;  }
-	YY_BREAK
-case 47:
-YY_RULE_SETUP
-#line 266 "first.l"
-{ yylval.str_val = strdup(yytext); return RETURN ;  }
-	YY_BREAK
-case 48:
-YY_RULE_SETUP
-#line 267 "first.l"
-{ yylval.str_val = strdup(yytext); return TRY ; }
-	YY_BREAK
-case 49:
-YY_RULE_SETUP
-#line 268 "first.l"
-{ yylval.str_val = strdup(yytext); return WHILE ; }
-	YY_BREAK
-case 50:
-YY_RULE_SETUP
-#line 269 "first.l"
-{ yylval.str_val = strdup(yytext); return WITH ; }
-	YY_BREAK
-case 51:
-YY_RULE_SETUP
-#line 270 "first.l"
-{ yylval.str_val = strdup(yytext); return YIELD ;  }
-	YY_BREAK
-case 52:
-YY_RULE_SETUP
-#line 271 "first.l"
-{ yylval.str_val = strdup(yytext); return CASE ;  }
-	YY_BREAK
-case 53:
-YY_RULE_SETUP
-#line 272 "first.l"
-{ return ASSIGN ; }
-	YY_BREAK
-case 54:
-YY_RULE_SETUP
-#line 273 "first.l"
-{ yylval.str_val = strdup(yytext); return PLUS ; }
-	YY_BREAK
-case 55:
-YY_RULE_SETUP
-#line 274 "first.l"
-{ return MINUS ; }
-	YY_BREAK
-case 56:
-YY_RULE_SETUP
-#line 275 "first.l"
-{ return MULTIPLY; }
-	YY_BREAK
-case 57:
-YY_RULE_SETUP
-#line 276 "first.l"
-{ return DIVIDE;}
-	YY_BREAK
-case 58:
-YY_RULE_SETUP
-#line 277 "first.l"
-{return COLON;}
-	YY_BREAK
-case 59:
-YY_RULE_SETUP
-#line 278 "first.l"
-{return COMA;}
-	YY_BREAK
-case 60:
-YY_RULE_SETUP
-#line 279 "first.l"
-{return LEFT_P;}
-	YY_BREAK
-case 61:
-YY_RULE_SETUP
-#line 280 "first.l"
-{return RIGHT_P;}
-	YY_BREAK
-case 62:
-YY_RULE_SETUP
-#line 281 "first.l"
-{yylval.str_val = strdup(yytext); return NULL_TOKEN;}
-	YY_BREAK
-case 63:
-YY_RULE_SETUP
-#line 282 "first.l"
-{yylval.str_val = strdup(yytext); return PRINT;}
-	YY_BREAK
-case 64:
-YY_RULE_SETUP
-#line 283 "first.l"
-{yylval.str_val = strdup(yytext); return FOR;}
-	YY_BREAK
-case 65:
-YY_RULE_SETUP
-#line 284 "first.l"
-{yylval.str_val =strdup(yytext); return ID;}
-	YY_BREAK
-case 66:
-YY_RULE_SETUP
-#line 285 "first.l"
-{yylval.str_val=strdup(yytext);return PLUS_ASSIGN;}
-	YY_BREAK
-case 67:
-YY_RULE_SETUP
-#line 286 "first.l"
-{yylval.str_val=strdup(yytext);return MINUS_ASSIGN;}
-	YY_BREAK
-case 68:
-YY_RULE_SETUP
-#line 287 "first.l"
-{yylval.str_val=strdup(yytext);return TIMES_ASSIGN;}
-	YY_BREAK
-case 69:
-YY_RULE_SETUP
-#line 288 "first.l"
-{yylval.str_val=strdup(yytext);return DIVIDE_ASSIGN;}
-	YY_BREAK
-case 70:
-YY_RULE_SETUP
-#line 289 "first.l"
-{yylval.str_val=strdup(yytext);return MODULO_ASSIGN;}
-	YY_BREAK
-case 71:
-YY_RULE_SETUP
-#line 290 "first.l"
-{yylval.str_val=strdup(yytext);return POWER_ASSIGN;}
-	YY_BREAK
-case 72:
-YY_RULE_SETUP
-#line 291 "first.l"
-{yylval.str_val=strdup(yytext);return AND_ASSIGN;}
-	YY_BREAK
-case 73:
-YY_RULE_SETUP
-#line 292 "first.l"
-{yylval.str_val=strdup(yytext);return OR_ASSIGN;}
-	YY_BREAK
-case 74:
-YY_RULE_SETUP
-#line 293 "first.l"
-{yylval.str_val=strdup(yytext);return XOR_ASSIGN;}
-	YY_BREAK
-case 75:
-YY_RULE_SETUP
-#line 294 "first.l"
-{yylval.str_val=strdup(yytext);return LEFT_SHIFT_ASSIGN;}
-	YY_BREAK
-case 76:
-YY_RULE_SETUP
-#line 295 "first.l"
-{yylval.str_val=strdup(yytext);return RIGHT_SHIFT_ASSIGN;}
-	YY_BREAK
-case 77:
-YY_RULE_SETUP
-#line 296 "first.l"
-{string_buf_ptr = string_buf; BEGIN(TRIPLE_STRING);}
-	YY_BREAK
-case 78:
-YY_RULE_SETUP
-#line 298 "first.l"
-{ comment_buf_ptr = comment_buf; BEGIN(COMMENT_TRIPLE); }
-	YY_BREAK
-case 79:
-YY_RULE_SETUP
-#line 299 "first.l"
-{ string_buf_ptr = string_buf; BEGIN(DOUBLE_STRING); }
-	YY_BREAK
-case 80:
-YY_RULE_SETUP
-#line 300 "first.l"
-{ comment_buf_ptr = comment_buf; BEGIN(COMMENT_MULTI); }
-	YY_BREAK
-case 81:
-YY_RULE_SETUP
-#line 301 "first.l"
-{ string_buf_ptr = string_buf; BEGIN(SINGLE_STRING); }
-	YY_BREAK
-case 82:
-YY_RULE_SETUP
-#line 306 "first.l"
-{ yylval.str_val = strdup(yytext); return GREATER_THAN; }
-	YY_BREAK
-case 83:
-YY_RULE_SETUP
-#line 307 "first.l"
-{ yylval.str_val = strdup(yytext); return LESS_THAN; }
-	YY_BREAK
-case 84:
-YY_RULE_SETUP
-#line 308 "first.l"
-{ yylval.str_val = strdup(yytext); return LESS_THAN_OR_EQUAL; }
-	YY_BREAK
-case 85:
-YY_RULE_SETUP
-#line 309 "first.l"
-{ yylval.str_val = strdup(yytext); return GREATER_THAN_OR_EQUAL; }
-	YY_BREAK
-case 86:
-YY_RULE_SETUP
-#line 310 "first.l"
-{ yylval.str_val = strdup(yytext); return NOT_EQUAL; }
-	YY_BREAK
-case 87:
-YY_RULE_SETUP
-#line 311 "first.l"
-{ yylval.str_val = strdup(yytext); return EQUAL; }
-	YY_BREAK
-case 88:
-YY_RULE_SETUP
-#line 312 "first.l"
-{ yylval.str_val = strdup(yytext); return FLOOR_DIVISION; }
-	YY_BREAK
-case 89:
-YY_RULE_SETUP
-#line 313 "first.l"
-{ yylval.str_val = strdup(yytext); return MODULUS; }
-	YY_BREAK
-case 90:
-YY_RULE_SETUP
-#line 314 "first.l"
-{ yylval.str_val = strdup(yytext); return EXPONENTIATION; }
-	YY_BREAK
-case 91:
-YY_RULE_SETUP
-#line 315 "first.l"
-{ yylval.str_val = strdup(yytext); return LEFT_BRACKET; }
-	YY_BREAK
-case 92:
-YY_RULE_SETUP
-#line 316 "first.l"
-{ yylval.str_val = strdup(yytext); return RIGHT_BRACKET; }
-	YY_BREAK
-case 93:
-YY_RULE_SETUP
-#line 317 "first.l"
-{ yylval.str_val = strdup(yytext); return LEFT_CURLY_BRACE; }
-	YY_BREAK
-case 94:
-YY_RULE_SETUP
-#line 318 "first.l"
-{ yylval.str_val = strdup(yytext); return RIGHT_CURLY_BRACE; }
-	YY_BREAK
-
-case 95:
-YY_RULE_SETUP
-#line 324 "first.l"
-{
-        BEGIN(INITIAL);
-       // printf("INDENT in line = %d\n",yylineno);
-        return INDENT;
-    }
-	YY_BREAK
-
-
-case 96:
-YY_RULE_SETUP
-#line 332 "first.l"
-{
-
-
-
-
-
-        int flag = 1;
-        for (int i = 0; i <= top; i++) {
-            if (current_indentation == stack_arr[i])
-                flag = 0;
-        }
-
-        if(flag) {
-            printf("Indentation Error in line = %d\n",yylineno);
-            return INDENT_ERROR;
-        }
-
-        int end = 1;
-        while(current_indentation < stack_arr[top])
-        {
-         //   printf("DEDENT in line = %d \n",yylineno);
-            unput(' ');
-            BEGIN(DEDENTSTATE);
-            end = 0;
-
-            pop();
-
-         //   printf("DEDENT in line = %d\n",yylineno);
-            return DEDENT;
-        }
-
-        if(end)
-            BEGIN(INITIAL);
-
-    }
-	YY_BREAK
-
-
-case 97:
-YY_RULE_SETUP
-#line 371 "first.l"
-{
-        if (top<0)
-            push(0);
-        if (stack_arr[top] > 0) {
-
-
-            while (top > 0) {
-                unput(' ');
-                BEGIN(DEDENTALLSTATE);
-                printf("DEDENT  in line = %d\n",yylineno);
-                pop();
-                return DEDENT;
-            }
-        } else {
-            BEGIN(INITIAL);
-        }
-    }
-	YY_BREAK
-
-
-case 98:
-YY_RULE_SETUP
-#line 395 "first.l"
-{*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;} 
-	YY_BREAK
-case 99:
-YY_RULE_SETUP
-#line 396 "first.l"
-{              }
-	YY_BREAK
-case 100:
-YY_RULE_SETUP
-#line 397 "first.l"
-{printf("error in line %d\n", yylineno); BEGIN(INITIAL);}
-	YY_BREAK
-case 101:
-YY_RULE_SETUP
-#line 398 "first.l"
+#line 111 "first.l"
 {*string_buf_ptr++ = '\n';}
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
-#line 399 "first.l"
+#line 112 "first.l"
 {*string_buf_ptr++ = '\t';}
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 400 "first.l"
+#line 113 "first.l"
 {*string_buf_ptr++ = '\r';}
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
-#line 401 "first.l"
+#line 114 "first.l"
 {*string_buf_ptr++ = '\b';}
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
-#line 402 "first.l"
+#line 115 "first.l"
 {*string_buf_ptr++ = '\f';}
 	YY_BREAK
 case 106:
 YY_RULE_SETUP
-#line 403 "first.l"
+#line 116 "first.l"
 {*string_buf_ptr++ = '\"';} 
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
-#line 404 "first.l"
+#line 117 "first.l"
 {
         char *yptr = yytext;
         while ( *yptr )
@@ -1591,54 +1180,59 @@ YY_RULE_SETUP
 	YY_BREAK
 
 
-case 108:
+case 38:
 YY_RULE_SETUP
-#line 413 "first.l"
-{*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;}
+#line 126 "first.l"
+{*string_buf_ptr = '\0'; printf("line%d, SINGLE STRING: %s\n", lno, string_buf); BEGIN(INITIAL);}
 	YY_BREAK
 case 109:
 YY_RULE_SETUP
-#line 414 "first.l"
-{              }
+#line 127 "first.l"
+{*string_buf_ptr++ = '\\';}
 	YY_BREAK
 case 110:
 YY_RULE_SETUP
-#line 415 "first.l"
-{printf("line%d, ERROR: new line in string\n", yylineno); BEGIN(INITIAL);}
+#line 128 "first.l"
+{*string_buf_ptr = '\n'; }
 	YY_BREAK
 case 111:
 YY_RULE_SETUP
-#line 416 "first.l"
+#line 129 "first.l"
+{printf("error in line %d\n", lno); lno++; BEGIN(INITIAL);}
+	YY_BREAK
+case 42:
+YY_RULE_SETUP
+#line 130 "first.l"
 {*string_buf_ptr++ = '\n';}
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
-#line 417 "first.l"
+#line 131 "first.l"
 {*string_buf_ptr++ = '\t';}
 	YY_BREAK
 case 113:
 YY_RULE_SETUP
-#line 418 "first.l"
+#line 132 "first.l"
 {*string_buf_ptr++ = '\r';}
 	YY_BREAK
 case 114:
 YY_RULE_SETUP
-#line 419 "first.l"
+#line 133 "first.l"
 {*string_buf_ptr++ = '\b';}
 	YY_BREAK
 case 115:
 YY_RULE_SETUP
-#line 420 "first.l"
+#line 134 "first.l"
 {*string_buf_ptr++ = '\f';}
 	YY_BREAK
 case 116:
 YY_RULE_SETUP
-#line 421 "first.l"
+#line 135 "first.l"
 {*string_buf_ptr++ = '\'';} 
 	YY_BREAK
 case 117:
 YY_RULE_SETUP
-#line 422 "first.l"
+#line 136 "first.l"
 {
         char *yptr = yytext;
         while ( *yptr )
@@ -1647,59 +1241,59 @@ YY_RULE_SETUP
 	YY_BREAK
 
 
-case 118:
+case 49:
 YY_RULE_SETUP
-#line 429 "first.l"
-{*string_buf_ptr = '\0'; BEGIN(INITIAL);return STRING;}
+#line 144 "first.l"
+{*string_buf_ptr = '\0'; printf("line%d, TRIPLE STRING: %s\n", lno, string_buf); BEGIN(INITIAL);} 
 	YY_BREAK
 case 119:
 YY_RULE_SETUP
-#line 430 "first.l"
+#line 145 "first.l"
 {*string_buf_ptr++ = '\\';}
 	YY_BREAK
 case 120:
 YY_RULE_SETUP
-#line 431 "first.l"
+#line 146 "first.l"
 {*string_buf_ptr = '\n'; }
 	YY_BREAK
 case 121:
 YY_RULE_SETUP
-#line 432 "first.l"
+#line 147 "first.l"
 {printf("error in line %d\n", lno); lno++; BEGIN(INITIAL);}
 	YY_BREAK
 case 122:
 YY_RULE_SETUP
-#line 433 "first.l"
+#line 148 "first.l"
 {*string_buf_ptr++ = '\n';}
 	YY_BREAK
 case 123:
 YY_RULE_SETUP
-#line 434 "first.l"
+#line 149 "first.l"
 {*string_buf_ptr++ = '\t';}
 	YY_BREAK
 case 124:
 YY_RULE_SETUP
-#line 435 "first.l"
+#line 150 "first.l"
 {*string_buf_ptr++ = '\r';}
 	YY_BREAK
 case 125:
 YY_RULE_SETUP
-#line 436 "first.l"
+#line 151 "first.l"
 {*string_buf_ptr++ = '\b';}
 	YY_BREAK
 case 126:
 YY_RULE_SETUP
-#line 437 "first.l"
+#line 152 "first.l"
 {*string_buf_ptr++ = '\f';}
 	YY_BREAK
 case 127:
 YY_RULE_SETUP
-#line 438 "first.l"
-{*string_buf_ptr++ = '\"';}
+#line 153 "first.l"
+{*string_buf_ptr++ = '\"';} 
 	YY_BREAK
 case 128:
 YY_RULE_SETUP
-#line 439 "first.l"
+#line 154 "first.l"
 {
         char *yptr = yytext;
         while ( *yptr )
@@ -1708,50 +1302,78 @@ YY_RULE_SETUP
 	YY_BREAK
 
 
-case 129:
+case 60:
 YY_RULE_SETUP
-#line 448 "first.l"
+#line 162 "first.l"
+{
+        char *yptr = yytext;
+        while ( *yptr )
+            *comment_buf_ptr++ = *yptr++;        
+    }
+	YY_BREAK
+case 61:
+YY_RULE_SETUP
+#line 167 "first.l"
+{ *comment_buf_ptr++ = '\n'; lno++; }        
+	YY_BREAK
+case 62:
+YY_RULE_SETUP
+#line 168 "first.l"
+{*comment_buf_ptr = '\0'; printf("line%d, triple comment: %s\n", lno, comment_buf); BEGIN(INITIAL); }
+	YY_BREAK
+case 63:
+YY_RULE_SETUP
+#line 169 "first.l"
+{*comment_buf_ptr++ = '\"'; *comment_buf_ptr++ = '\"';}
+	YY_BREAK
+case 64:
+YY_RULE_SETUP
+#line 170 "first.l"
+{*comment_buf_ptr++ = '\"';}
+	YY_BREAK
+
+
+case 65:
+YY_RULE_SETUP
+#line 174 "first.l"
 {
         char *yptr = yytext;
         while ( *yptr )
             *comment_buf_ptr++ = *yptr++;
     }
 	YY_BREAK
-case 130:
+case 66:
 YY_RULE_SETUP
-#line 453 "first.l"
-{ *comment_buf_ptr++ = '\n'; lno++; }
-	YY_BREAK
-case 131:
-YY_RULE_SETUP
-#line 454 "first.l"
-{*comment_buf_ptr = '\0';  BEGIN(INITIAL); return COMMENT; }
-	YY_BREAK
-case 132:
-YY_RULE_SETUP
-#line 455 "first.l"
-{*comment_buf_ptr++ = '\''; *comment_buf_ptr++ = '\'';}
-	YY_BREAK
-case 133:
-YY_RULE_SETUP
-#line 456 "first.l"
-{*comment_buf_ptr++ = '\'';}
+#line 179 "first.l"
+{*comment_buf_ptr = '\0'; printf("line%d, single line comment: %s\n", lno, comment_buf); lno++; BEGIN(white_space); }
 	YY_BREAK
 
 
-case 134:
+case 67:
 YY_RULE_SETUP
-#line 459 "first.l"
+#line 183 "first.l"
+{checkIndent(yyleng, yytext);}
+	YY_BREAK
+case 68:
+YY_RULE_SETUP
+#line 184 "first.l"
+{BEGIN(INITIAL);}
+	YY_BREAK
+
+
+case 69:
+YY_RULE_SETUP
+#line 188 "first.l"
 {
         char *yptr = yytext;
         while ( *yptr )
-            *comment_buf_ptr++ = *yptr++;
+            *comment_buf_ptr++ = *yptr++;        
     }
 	YY_BREAK
-case 135:
+case 70:
 YY_RULE_SETUP
-#line 464 "first.l"
-{ *comment_buf_ptr++ = '\n'; lno++; }
+#line 193 "first.l"
+{ *comment_buf_ptr++ = '\n'; lno++; }        
 	YY_BREAK
 case 136:
 YY_RULE_SETUP
