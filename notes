@@ -1,0 +1,69 @@
+
+prog:
+   { /* for empty put % empty */}
+| statements {
+	printf("prog accepted:\n");YYACCEPT;
+}
+;
+
+statements  : statement { }
+            | statements NEWLINE statement { }
+            | statements NEWLINE { }
+            ;
+
+
+statement   : if_stmt { }
+            | while_stmt { }
+            | for_stmt { }
+            | function { }
+            | function_call { }
+            | assignment { }
+            | class { }
+            | try_except_stmt { }
+            | match_stmt { }
+            | with_statement { }
+            ;
+
+
+argp  : ID { }
+      | NUMBER { }
+      | STRING { }
+      ;
+
+
+
+
+
+block //: NEWLINE INDENT stmts NEWLINE DEDENT { }
+      : NEWLINE INDENT stmts DEDENT { }
+;
+
+stmts : stmt
+      | stmts stmt
+;
+
+stmt  : simple_stmt NEWLINE {}
+      | compound_stmt {}
+;
+
+
+simple_stmt
+      : assignment      {}
+      //| return_stmt     {}
+      //| BREAK           {}
+      //| CONTINUE        {}
+      //| yield_stmt      {}
+      //| global_stmt     {}
+      //| nonlocal_stmt   {}
+      | function_call   {}
+;
+
+compound_stmt
+      : if_stmt    {}
+      | while_stmt {}
+      | for_stmt   {}
+      //| function   {}
+      | try_except_stmt {}
+      | with_statement {}
+      | match_stmt {}
+;
