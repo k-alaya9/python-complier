@@ -818,14 +818,25 @@ extern int yylex();
 
 #define INITIAL 0
 #define DOUBLE_STRING 1
+<<<<<<< HEAD
 #define SINGLE_STRING 2
 #define TRIPLE_STRING 3
 #define COMMENT_MULTI 4
+=======
+
+#define SINGLE_STRING 2
+
+#define TRIPLE_STRING 3
+
+#define COMMENT_SINGLE 4
+
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 #define COMMENT_TRIPLE 5
 #define INDENTSTATE 6
 #define DEDENTALLSTATE 7
 #define DEDENTSTATE 8
 
+<<<<<<< HEAD
 #ifndef YY_NO_UNISTD_H
 /* Special case for "unistd.h", since it is non-ANSI. We include it way
  * down here because we want the user's section 1 to have been scanned first.
@@ -868,6 +879,9 @@ char *yyget_text ( void );
 int yyget_lineno ( void );
 
 void yyset_lineno ( int _line_number  );
+=======
+#line 618 "lex.yy.c"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -1325,6 +1339,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 253 "first.l"
 { yylval.str_val = strdup(yytext); return ELIF ;  }
 	YY_BREAK
@@ -1739,36 +1754,63 @@ YY_RULE_SETUP
 case 101:
 YY_RULE_SETUP
 #line 406 "first.l"
+=======
+#line 111 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr++ = '\n';}
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 407 "first.l"
+=======
+#line 112 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr++ = '\t';}
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 408 "first.l"
+=======
+#line 113 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr++ = '\r';}
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 409 "first.l"
+=======
+#line 114 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr++ = '\b';}
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 410 "first.l"
+=======
+#line 115 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr++ = '\f';}
 	YY_BREAK
 case 106:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 411 "first.l"
+=======
+#line 116 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr++ = '\"';} 
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 412 "first.l"
+=======
+#line 117 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {
         char *yptr = yytext;
         while ( *yptr )
@@ -1777,56 +1819,104 @@ YY_RULE_SETUP
 	YY_BREAK
 
 
-case 108:
+case 38:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 421 "first.l"
 {*string_buf_ptr = '\0'; BEGIN(INITIAL); return STRING;}
+=======
+#line 126 "first.l"
+{*string_buf_ptr = '\0'; printf("line%d, SINGLE STRING: %s\n", lno, string_buf); BEGIN(INITIAL);}
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 	YY_BREAK
 case 109:
 /* rule 109 can match eol */
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 422 "first.l"
 {              }
+=======
+#line 127 "first.l"
+{*string_buf_ptr++ = '\\';}
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 	YY_BREAK
 case 110:
 /* rule 110 can match eol */
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 423 "first.l"
 {printf("line%d, ERROR: new line in string\n", yylineno); BEGIN(INITIAL);}
 	YY_BREAK
 case 111:
 YY_RULE_SETUP
 #line 424 "first.l"
+=======
+#line 128 "first.l"
+{*string_buf_ptr = '\n'; }
+	YY_BREAK
+case 111:
+YY_RULE_SETUP
+#line 129 "first.l"
+{printf("error in line %d\n", lno); lno++; BEGIN(INITIAL);}
+	YY_BREAK
+case 42:
+YY_RULE_SETUP
+#line 130 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr++ = '\n';}
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 425 "first.l"
+=======
+#line 131 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr++ = '\t';}
 	YY_BREAK
 case 113:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 426 "first.l"
+=======
+#line 132 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr++ = '\r';}
 	YY_BREAK
 case 114:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 427 "first.l"
+=======
+#line 133 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr++ = '\b';}
 	YY_BREAK
 case 115:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 428 "first.l"
+=======
+#line 134 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr++ = '\f';}
 	YY_BREAK
 case 116:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 429 "first.l"
+=======
+#line 135 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr++ = '\'';} 
 	YY_BREAK
 case 117:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 430 "first.l"
+=======
+#line 136 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {
         char *yptr = yytext;
         while ( *yptr )
@@ -1835,61 +1925,107 @@ YY_RULE_SETUP
 	YY_BREAK
 
 
-case 118:
+case 49:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 437 "first.l"
 {*string_buf_ptr = '\0'; BEGIN(INITIAL);return STRING;}
 	YY_BREAK
 case 119:
 YY_RULE_SETUP
 #line 438 "first.l"
+=======
+#line 144 "first.l"
+{*string_buf_ptr = '\0'; printf("line%d, TRIPLE STRING: %s\n", lno, string_buf); BEGIN(INITIAL);} 
+	YY_BREAK
+case 119:
+YY_RULE_SETUP
+#line 145 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr++ = '\\';}
 	YY_BREAK
 case 120:
 /* rule 120 can match eol */
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 439 "first.l"
+=======
+#line 146 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr = '\n'; }
 	YY_BREAK
 case 121:
 /* rule 121 can match eol */
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 440 "first.l"
+=======
+#line 147 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {printf("error in line %d\n", lno); lno++; BEGIN(INITIAL);}
 	YY_BREAK
 case 122:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 441 "first.l"
+=======
+#line 148 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr++ = '\n';}
 	YY_BREAK
 case 123:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 442 "first.l"
+=======
+#line 149 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr++ = '\t';}
 	YY_BREAK
 case 124:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 443 "first.l"
+=======
+#line 150 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr++ = '\r';}
 	YY_BREAK
 case 125:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 444 "first.l"
+=======
+#line 151 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr++ = '\b';}
 	YY_BREAK
 case 126:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 445 "first.l"
+=======
+#line 152 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {*string_buf_ptr++ = '\f';}
 	YY_BREAK
 case 127:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 446 "first.l"
 {*string_buf_ptr++ = '\"';}
 	YY_BREAK
 case 128:
 YY_RULE_SETUP
 #line 447 "first.l"
+=======
+#line 153 "first.l"
+{*string_buf_ptr++ = '\"';} 
+	YY_BREAK
+case 128:
+YY_RULE_SETUP
+#line 154 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {
         char *yptr = yytext;
         while ( *yptr )
@@ -1898,15 +2034,51 @@ YY_RULE_SETUP
 	YY_BREAK
 
 
-case 129:
+case 60:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 456 "first.l"
+=======
+#line 162 "first.l"
+{
+        char *yptr = yytext;
+        while ( *yptr )
+            *comment_buf_ptr++ = *yptr++;        
+    }
+	YY_BREAK
+case 61:
+YY_RULE_SETUP
+#line 167 "first.l"
+{ *comment_buf_ptr++ = '\n'; lno++; }        
+	YY_BREAK
+case 62:
+YY_RULE_SETUP
+#line 168 "first.l"
+{*comment_buf_ptr = '\0'; printf("line%d, triple comment: %s\n", lno, comment_buf); BEGIN(INITIAL); }
+	YY_BREAK
+case 63:
+YY_RULE_SETUP
+#line 169 "first.l"
+{*comment_buf_ptr++ = '\"'; *comment_buf_ptr++ = '\"';}
+	YY_BREAK
+case 64:
+YY_RULE_SETUP
+#line 170 "first.l"
+{*comment_buf_ptr++ = '\"';}
+	YY_BREAK
+
+
+case 65:
+YY_RULE_SETUP
+#line 174 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {
         char *yptr = yytext;
         while ( *yptr )
             *comment_buf_ptr++ = *yptr++;
     }
 	YY_BREAK
+<<<<<<< HEAD
 case 130:
 /* rule 130 can match eol */
 YY_RULE_SETUP
@@ -1927,23 +2099,52 @@ case 133:
 YY_RULE_SETUP
 #line 464 "first.l"
 {*comment_buf_ptr++ = '\'';}
+=======
+case 66:
+YY_RULE_SETUP
+#line 179 "first.l"
+{*comment_buf_ptr = '\0'; printf("line%d, single line comment: %s\n", lno, comment_buf); lno++; BEGIN(white_space); }
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 	YY_BREAK
 
 
-case 134:
+case 67:
 YY_RULE_SETUP
+<<<<<<< HEAD
 #line 467 "first.l"
+=======
+#line 183 "first.l"
+{checkIndent(yyleng, yytext);}
+	YY_BREAK
+case 68:
+YY_RULE_SETUP
+#line 184 "first.l"
+{BEGIN(INITIAL);}
+	YY_BREAK
+
+
+case 69:
+YY_RULE_SETUP
+#line 188 "first.l"
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 {
         char *yptr = yytext;
         while ( *yptr )
-            *comment_buf_ptr++ = *yptr++;
+            *comment_buf_ptr++ = *yptr++;        
     }
 	YY_BREAK
+<<<<<<< HEAD
 case 135:
 /* rule 135 can match eol */
 YY_RULE_SETUP
 #line 472 "first.l"
 { *comment_buf_ptr++ = '\n'; lno++; }
+=======
+case 70:
+YY_RULE_SETUP
+#line 193 "first.l"
+{ *comment_buf_ptr++ = '\n'; lno++; }        
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 	YY_BREAK
 case 136:
 YY_RULE_SETUP

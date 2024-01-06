@@ -1,0 +1,6429 @@
+Terminals unused in grammar
+
+   INDENT_ERROR
+   NUMBER
+   MAIN
+   ASSERT
+   AWAIT
+   DEL
+   INPUT
+   FROM
+   PASS
+   RAISE
+   PRINT
+   COMMENT
+   IMPORT
+   LAMDA
+   NULL_TOKEN
+   AT
+   LEFT_BRACKET
+   RIGHT_BRACKET
+   LEFT_CURLY_BRACE
+   RIGHT_CURLY_BRACE
+
+
+State 43 conflicts: 2 shift/reduce
+State 65 conflicts: 2 reduce/reduce
+State 108 conflicts: 1 shift/reduce
+State 140 conflicts: 1 shift/reduce
+State 145 conflicts: 4 reduce/reduce
+
+
+Grammar
+
+    0 $accept: include $end
+
+    1 include: /* empty */
+    2        | stmts
+
+    3 block: NEWLINE INDENT stmts DEDENT
+    4      | INDENT stmts DEDENT
+
+    5 stmts: stmt
+    6      | stmts stmt
+
+    7 stmt: simple_stmt NEWLINE
+    8     | compound_stmt
+
+    9 simple_stmt: assignment
+   10            | return_stmt
+   11            | BREAK
+   12            | CONTINUE
+   13            | yield_statement
+   14            | global_statement
+   15            | nonlocal_statement
+   16            | case_statements
+   17            | function_call
+
+   18 compound_stmt: if_statement
+   19              | function_def
+   20              | while_statement
+   21              | for_statement
+   22              | match_statement
+   23              | try_stmt
+   24              | with_statement
+   25              | class_def
+
+   26 function_def: DEF id LEFT_P parameters RIGHT_P return_type block
+   27             | ASYNC DEF ID LEFT_P parameters RIGHT_P return_type block
+
+   28 return_type: /* empty */
+   29            | ARROW types
+
+   30 types: INT_KEYWORD
+   31      | FLOAT_KEYWORD
+   32      | STRING_KEYWORD
+   33      | BOOL_KEYWORD
+   34      | LIST_KEYWORD
+   35      | NONE
+
+   36 parameters: /* empty */
+   37           | default_parameters
+   38           | non_default_parameters
+
+   39 default_parameters: default_parameter COMA default_parameters
+   40                   | default_parameter COMA non_default_parameters
+   41                   | default_parameter
+
+   42 non_default_parameters: non_default_parameter COMA non_default_parameters
+   43                       | non_default_parameter COMA default_parameters
+   44                       | non_default_parameter
+
+   45 default_parameter: ID ASSIGN expression
+   46                  | ID ASSIGN expression COLON types
+
+   47 non_default_parameter: ID
+   48                      | ID COLON types
+
+   49 function_call: ID LEFT_P args RIGHT_P
+
+   50 with_statement: WITH with_statement_body if_block
+   51               | ASYNC WITH with_statement_body COLON if_block
+
+   52 with_statement_body: with_statement_body COMA with_body
+   53                    | with_body
+
+   54 with_body: with_stmt_contents
+   55          | LEFT_P with_stmt_contents RIGHT_P
+
+   56 with_stmt_contents: with_stmt_contents COMA with_item
+   57                   | with_item
+
+   58 with_item: id LEFT_P inside_brackets RIGHT_P AS target
+   59          | expression
+   60          | expression AS target
+
+   61 inside_brackets: /* empty */
+   62                | expression
+   63                | expression COMA inside_brackets
+
+   64 try_stmt: try1_stmt
+   65         | try2_stmt
+   66         | try3_stmt
+
+   67 try1_stmt: TRY block except_statement_plus_for_try1 else_statement op_finally
+
+   68 try2_stmt: TRY block except_statement_plus_for_try2 else_statement op_finally
+
+   69 try3_stmt: TRY block FINALLY block
+
+   70 except_statement_plus_for_try1: EXCEPT op_expression_as block
+   71                               | EXCEPT op_expression_as block except_statement_plus_for_try1
+
+   72 except_statement_plus_for_try2: EXCEPT MULTIPLY expression op_as block
+   73                               | EXCEPT MULTIPLY expression op_as COLON block except_statement_plus_for_try2
+
+   74 op_as: /* empty */
+   75      | AS ID
+
+   76 op_expression_as: /* empty */
+   77                 | expression op_as
+
+   78 op_finally: /* empty */
+   79           | FINALLY block
+
+   80 while_statement: WHILE expression for_block
+
+   81 for_statement: FOR targets IN star_expressions for_block
+   82              | ASYNC FOR targets IN star_expressions for_block
+   83              | FOR targets IN RANGE LEFT_P INT COMA INT RIGHT_P for_block
+   84              | FOR targets IN RANGE LEFT_P INT COMA INT COMA INT RIGHT_P for_block
+
+   85 star_expressions: star_expression
+   86                 | star_expression COMA star_expressions
+
+   87 star_expression: '*' bitwise_or
+   88                | expression
+
+   89 for_block: NEWLINE INDENT for_stmts DEDENT
+   90          | INDENT for_stmts DEDENT
+
+   91 for_stmts: for_stmt
+   92          | for_stmts for_stmt
+
+   93 for_stmt: assignment NEWLINE
+   94         | function_call NEWLINE
+   95         | BREAK NEWLINE
+   96         | CONTINUE NEWLINE
+   97         | if_statement
+   98         | for_statement
+   99         | match_statement
+  100         | try_stmt
+  101         | with_statement
+  102         | class_def
+
+  103 class_def: CLASS id arguments block
+
+  104 id: ID
+  105   | id ID
+
+  106 arguments: /* empty */
+  107          | LEFT_P args RIGHT_P
+  108          | LEFT_P kwargs RIGHT_P
+  109          | args COMA kwargs
+  110          | args
+
+  111 args: /* empty */
+  112     | args_list
+
+  113 args_list: expression
+  114          | args_list COMA expression
+
+  115 kwargs: kwarg_list
+
+  116 kwarg_list: kwarg
+  117           | kwarg_list COMA kwarg
+
+  118 kwarg: ID ASSIGN expression
+  119      | MULTIPLY expression
+  120      | DOUBLE_STAR expression
+
+  121 match_statement: MATCH expression match_block
+
+  122 match_block: NEWLINE INDENT case_statements DEDENT
+
+  123 case_statements: case_statement
+  124                | case_statements case_statement
+
+  125 case_statement: CASE target block
+
+  126 if_statement: IF expression if_block elif_statement
+  127             | IF expression if_block else_statement
+
+  128 elif_statement: ELIF expression if_block elif_statement
+  129               | ELIF expression if_block else_statement
+
+  130 else_statement: /* empty */
+  131               | ELSE block
+
+  132 if_block: NEWLINE INDENT if_stmts DEDENT
+  133         | INDENT if_stmts DEDENT
+
+  134 if_stmts: if_stmt
+  135         | if_stmts if_stmt
+
+  136 if_stmt: assignment NEWLINE
+  137        | function_call NEWLINE
+  138        | if_statement
+  139        | function_def
+  140        | while_statement
+  141        | for_statement
+  142        | match_statement
+  143        | try_stmt
+  144        | with_statement
+  145        | class_def
+
+  146 assignment: single_assignment
+  147           | multi_assignment
+  148           | augmented_assignment
+
+  149 single_assignment: target ASSIGN expression
+  150                  | target COLON expression
+
+  151 multi_assignment: targets ASSIGN expressions
+  152                 | targets COLON expressions
+
+  153 augmented_assignment: ID PLUS_ASSIGN expression
+  154                     | ID MINUS_ASSIGN expression
+  155                     | ID TIMES_ASSIGN expression
+  156                     | ID DIVIDE_ASSIGN expression
+  157                     | ID MODULO_ASSIGN expression
+  158                     | ID POWER_ASSIGN expression
+  159                     | ID AND_ASSIGN expression
+  160                     | ID OR_ASSIGN expression
+  161                     | ID XOR_ASSIGN expression
+  162                     | ID LEFT_SHIFT_ASSIGN expression
+  163                     | ID RIGHT_SHIFT_ASSIGN expression
+
+  164 targets: target
+  165        | targets COMA target
+
+  166 target: LEFT_P targets RIGHT_P
+  167       | target DOT ID
+  168       | ID
+
+  169 return_stmt: RETURN expressions
+
+  170 yield_statement: YIELD expressions
+
+  171 global_statement: GLOBAL global_list
+
+  172 global_list: ID
+  173            | global_list COMA ID
+
+  174 nonlocal_statement: NONLOCAL nonlocal_list
+
+  175 nonlocal_list: ID
+  176              | nonlocal_list COMA ID
+
+  177 expressions: expression
+  178            | expressions COMA expression
+
+  179 expression: disjunction IF disjunction ELSE expression
+  180           | disjunction
+
+  181 disjunction: disjunction OR conjunction
+  182            | conjunction
+
+  183 conjunction: conjunction AND inversion
+  184            | inversion
+
+  185 inversion: NOT inversion
+  186          | comparison
+
+  187 comparison: bitwise_or compare_op_bitwise_or_pair
+  188           | bitwise_or
+
+  189 compare_op_bitwise_or_pair: eq_bitwise_or
+  190                           | noteq_bitwise_or
+  191                           | lte_bitwise_or
+  192                           | lt_bitwise_or
+  193                           | gte_bitwise_or
+  194                           | gt_bitwise_or
+  195                           | notin_bitwise_or
+  196                           | in_bitwise_or
+  197                           | isnot_bitwise_or
+  198                           | is_bitwise_or
+
+  199 eq_bitwise_or: EQUAL bitwise_or
+
+  200 noteq_bitwise_or: NOT_EQUAL bitwise_or
+
+  201 lte_bitwise_or: LESS_THAN_OR_EQUAL bitwise_or
+
+  202 lt_bitwise_or: LESS_THAN bitwise_or
+
+  203 gte_bitwise_or: GREATER_THAN_OR_EQUAL bitwise_or
+
+  204 gt_bitwise_or: GREATER_THAN bitwise_or
+
+  205 notin_bitwise_or: NOT IN bitwise_or
+
+  206 in_bitwise_or: IN bitwise_or
+
+  207 isnot_bitwise_or: IS NOT bitwise_or
+
+  208 is_bitwise_or: IS bitwise_or
+
+  209 bitwise_or: bitwise_or '|' bitwise_xor
+  210           | bitwise_xor
+
+  211 bitwise_xor: bitwise_xor '^' bitwise_and
+  212            | bitwise_and
+
+  213 bitwise_and: bitwise_and '&' shift_expr
+  214            | shift_expr
+
+  215 shift_expr: shift_expr '<' sum
+  216           | shift_expr '>' sum
+  217           | sum
+
+  218 sum: sum PLUS term
+  219    | sum MINUS term
+  220    | term
+
+  221 term: term MULTIPLY factor
+  222     | term DIVIDE factor
+  223     | term FLOOR_DIVISION factor
+  224     | term MODULUS factor
+  225     | term '@' factor
+  226     | factor
+
+  227 factor: '+' factor
+  228       | '-' factor
+  229       | '~' factor
+  230       | power
+
+  231 power: atom EXPONENTIATION factor
+  232      | atom
+
+  233 atom: TRUE_TOKEN
+  234     | FALSE_TOKEN
+  235     | NONE
+  236     | ID
+  237     | STRING
+  238     | INT
+  239     | FLOAT
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'&' (38) 213
+'*' (42) 87
+'+' (43) 227
+'-' (45) 228
+'<' (60) 215
+'>' (62) 216
+'@' (64) 225
+'^' (94) 211
+'|' (124) 209
+'~' (126) 229
+error (256)
+INT (258) 83 84 238
+INDENT (259) 3 4 89 90 122 132 133
+DEDENT (260) 3 4 89 90 122 132 133
+INDENT_ERROR (261)
+NUMBER (262)
+FLOAT (263) 239
+DEF (264) 26 27
+STRING (265) 237
+ID (266) 27 45 46 47 48 49 75 104 105 118 153 154 155 156 157 158 159
+    160 161 162 163 167 168 172 173 175 176 236
+MAIN (267)
+TRUE_TOKEN (268) 233
+FALSE_TOKEN (269) 234
+NONE (270) 35 235
+AND (271) 183
+INT_KEYWORD (272) 30
+FLOAT_KEYWORD (273) 31
+STRING_KEYWORD (274) 32
+BOOL_KEYWORD (275) 33
+LIST_KEYWORD (276) 34
+AS (277) 58 60 75
+ASSERT (278)
+ASYNC (279) 27 51 82
+AWAIT (280)
+BREAK (281) 11 95
+CLASS (282) 103
+CONTINUE (283) 12 96
+DEL (284)
+INPUT (285)
+ELIF (286) 128 129
+ELSE (287) 131 179
+EXCEPT (288) 70 71 72 73
+FINALLY (289) 69 79
+FOR (290) 81 82 83 84
+FROM (291)
+GLOBAL (292) 171
+IF (293) 126 127 179
+PASS (294)
+RAISE (295)
+RETURN (296) 169
+TRY (297) 67 68 69
+WHILE (298) 80
+YIELD (299) 170
+CASE (300) 125
+PRINT (301)
+WITH (302) 50 51
+MATCH (303) 121
+DOT (304) 167
+COMMENT (305)
+RANGE (306) 83 84
+IMPORT (307)
+IN (308) 81 82 83 84 205 206
+IS (309) 207 208
+LAMDA (310)
+NONLOCAL (311) 174
+NOT (312) 185 205 207
+NULL_TOKEN (313)
+OR (314) 181
+PLUS (315) 218
+NEWLINE (316) 3 7 89 93 94 95 96 122 132 136 137
+GREATER_THAN (317) 204
+LESS_THAN (318) 202
+LESS_THAN_OR_EQUAL (319) 201
+GREATER_THAN_OR_EQUAL (320) 203
+AT (321)
+DOUBLE_STAR (322) 120
+ARROW (323) 29
+NOT_EQUAL (324) 200
+EQUAL (325) 199
+FLOOR_DIVISION (326) 223
+MODULUS (327) 224
+EXPONENTIATION (328) 231
+LEFT_BRACKET (329)
+RIGHT_BRACKET (330)
+LEFT_CURLY_BRACE (331)
+RIGHT_CURLY_BRACE (332)
+PLUS_ASSIGN (333) 153
+MINUS_ASSIGN (334) 154
+TIMES_ASSIGN (335) 155
+DIVIDE_ASSIGN (336) 156
+MODULO_ASSIGN (337) 157
+POWER_ASSIGN (338) 158
+AND_ASSIGN (339) 159
+OR_ASSIGN (340) 160
+XOR_ASSIGN (341) 161
+LEFT_SHIFT_ASSIGN (342) 162
+RIGHT_SHIFT_ASSIGN (343) 163
+ASSIGN (344) 45 46 118 149 151
+MINUS (345) 219
+MULTIPLY (346) 72 73 119 221
+DIVIDE (347) 222
+COLON (348) 46 48 51 73 150 152
+COMA (349) 39 40 42 43 52 56 63 83 84 86 109 114 117 165 173 176 178
+LEFT_P (350) 26 27 49 55 58 83 84 107 108 166
+RIGHT_P (351) 26 27 49 55 58 83 84 107 108 166
+
+
+Nonterminals, with rules where they appear
+
+$accept (107)
+    on left: 0
+include (108)
+    on left: 1 2, on right: 0
+block (109)
+    on left: 3 4, on right: 26 27 67 68 69 70 71 72 73 79 103 125 131
+stmts (110)
+    on left: 5 6, on right: 2 3 4 6
+stmt (111)
+    on left: 7 8, on right: 5 6
+simple_stmt (112)
+    on left: 9 10 11 12 13 14 15 16 17, on right: 7
+compound_stmt (113)
+    on left: 18 19 20 21 22 23 24 25, on right: 8
+function_def (114)
+    on left: 26 27, on right: 19 139
+return_type (115)
+    on left: 28 29, on right: 26 27
+types (116)
+    on left: 30 31 32 33 34 35, on right: 29 46 48
+parameters (117)
+    on left: 36 37 38, on right: 26 27
+default_parameters (118)
+    on left: 39 40 41, on right: 37 39 43
+non_default_parameters (119)
+    on left: 42 43 44, on right: 38 40 42
+default_parameter (120)
+    on left: 45 46, on right: 39 40 41
+non_default_parameter (121)
+    on left: 47 48, on right: 42 43 44
+function_call (122)
+    on left: 49, on right: 17 94 137
+with_statement (123)
+    on left: 50 51, on right: 24 101 144
+with_statement_body (124)
+    on left: 52 53, on right: 50 51 52
+with_body (125)
+    on left: 54 55, on right: 52 53
+with_stmt_contents (126)
+    on left: 56 57, on right: 54 55 56
+with_item (127)
+    on left: 58 59 60, on right: 56 57
+inside_brackets (128)
+    on left: 61 62 63, on right: 58 63
+try_stmt (129)
+    on left: 64 65 66, on right: 23 100 143
+try1_stmt (130)
+    on left: 67, on right: 64
+try2_stmt (131)
+    on left: 68, on right: 65
+try3_stmt (132)
+    on left: 69, on right: 66
+except_statement_plus_for_try1 (133)
+    on left: 70 71, on right: 67 71
+except_statement_plus_for_try2 (134)
+    on left: 72 73, on right: 68 73
+op_as (135)
+    on left: 74 75, on right: 72 73 77
+op_expression_as (136)
+    on left: 76 77, on right: 70 71
+op_finally (137)
+    on left: 78 79, on right: 67 68
+while_statement (138)
+    on left: 80, on right: 20 140
+for_statement (139)
+    on left: 81 82 83 84, on right: 21 98 141
+star_expressions (140)
+    on left: 85 86, on right: 81 82 86
+star_expression (141)
+    on left: 87 88, on right: 85 86
+for_block (142)
+    on left: 89 90, on right: 80 81 82 83 84
+for_stmts (143)
+    on left: 91 92, on right: 89 90 92
+for_stmt (144)
+    on left: 93 94 95 96 97 98 99 100 101 102, on right: 91 92
+class_def (145)
+    on left: 103, on right: 25 102 145
+id (146)
+    on left: 104 105, on right: 26 58 103 105
+arguments (147)
+    on left: 106 107 108 109 110, on right: 103
+args (148)
+    on left: 111 112, on right: 49 107 109 110
+args_list (149)
+    on left: 113 114, on right: 112 114
+kwargs (150)
+    on left: 115, on right: 108 109
+kwarg_list (151)
+    on left: 116 117, on right: 115 117
+kwarg (152)
+    on left: 118 119 120, on right: 116 117
+match_statement (153)
+    on left: 121, on right: 22 99 142
+match_block (154)
+    on left: 122, on right: 121
+case_statements (155)
+    on left: 123 124, on right: 16 122 124
+case_statement (156)
+    on left: 125, on right: 123 124
+if_statement (157)
+    on left: 126 127, on right: 18 97 138
+elif_statement (158)
+    on left: 128 129, on right: 126 128
+else_statement (159)
+    on left: 130 131, on right: 67 68 127 129
+if_block (160)
+    on left: 132 133, on right: 50 51 126 127 128 129
+if_stmts (161)
+    on left: 134 135, on right: 132 133 135
+if_stmt (162)
+    on left: 136 137 138 139 140 141 142 143 144 145, on right: 134
+    135
+assignment (163)
+    on left: 146 147 148, on right: 9 93 136
+single_assignment (164)
+    on left: 149 150, on right: 146
+multi_assignment (165)
+    on left: 151 152, on right: 147
+augmented_assignment (166)
+    on left: 153 154 155 156 157 158 159 160 161 162 163, on right:
+    148
+targets (167)
+    on left: 164 165, on right: 81 82 83 84 151 152 165 166
+target (168)
+    on left: 166 167 168, on right: 58 60 125 149 150 164 165 167
+return_stmt (169)
+    on left: 169, on right: 10
+yield_statement (170)
+    on left: 170, on right: 13
+global_statement (171)
+    on left: 171, on right: 14
+global_list (172)
+    on left: 172 173, on right: 171 173
+nonlocal_statement (173)
+    on left: 174, on right: 15
+nonlocal_list (174)
+    on left: 175 176, on right: 174 176
+expressions (175)
+    on left: 177 178, on right: 151 152 169 170 178
+expression (176)
+    on left: 179 180, on right: 45 46 59 60 62 63 72 73 77 80 88 113
+    114 118 119 120 121 126 127 128 129 149 150 153 154 155 156 157
+    158 159 160 161 162 163 177 178 179
+disjunction (177)
+    on left: 181 182, on right: 179 180 181
+conjunction (178)
+    on left: 183 184, on right: 181 182 183
+inversion (179)
+    on left: 185 186, on right: 183 184 185
+comparison (180)
+    on left: 187 188, on right: 186
+compare_op_bitwise_or_pair (181)
+    on left: 189 190 191 192 193 194 195 196 197 198, on right: 187
+eq_bitwise_or (182)
+    on left: 199, on right: 189
+noteq_bitwise_or (183)
+    on left: 200, on right: 190
+lte_bitwise_or (184)
+    on left: 201, on right: 191
+lt_bitwise_or (185)
+    on left: 202, on right: 192
+gte_bitwise_or (186)
+    on left: 203, on right: 193
+gt_bitwise_or (187)
+    on left: 204, on right: 194
+notin_bitwise_or (188)
+    on left: 205, on right: 195
+in_bitwise_or (189)
+    on left: 206, on right: 196
+isnot_bitwise_or (190)
+    on left: 207, on right: 197
+is_bitwise_or (191)
+    on left: 208, on right: 198
+bitwise_or (192)
+    on left: 209 210, on right: 87 187 188 199 200 201 202 203 204
+    205 206 207 208 209
+bitwise_xor (193)
+    on left: 211 212, on right: 209 210 211
+bitwise_and (194)
+    on left: 213 214, on right: 211 212 213
+shift_expr (195)
+    on left: 215 216 217, on right: 213 214 215 216
+sum (196)
+    on left: 218 219 220, on right: 215 216 217 218 219
+term (197)
+    on left: 221 222 223 224 225 226, on right: 218 219 220 221 222
+    223 224 225
+factor (198)
+    on left: 227 228 229 230, on right: 221 222 223 224 225 226 227
+    228 229 231
+power (199)
+    on left: 231 232, on right: 230
+atom (200)
+    on left: 233 234 235 236 237 238 239, on right: 231 232
+
+
+state 0
+
+    0 $accept: . include $end
+
+    DEF       shift, and go to state 1
+    ID        shift, and go to state 2
+    ASYNC     shift, and go to state 3
+    BREAK     shift, and go to state 4
+    CLASS     shift, and go to state 5
+    CONTINUE  shift, and go to state 6
+    FOR       shift, and go to state 7
+    GLOBAL    shift, and go to state 8
+    IF        shift, and go to state 9
+    RETURN    shift, and go to state 10
+    TRY       shift, and go to state 11
+    WHILE     shift, and go to state 12
+    YIELD     shift, and go to state 13
+    CASE      shift, and go to state 14
+    WITH      shift, and go to state 15
+    MATCH     shift, and go to state 16
+    NONLOCAL  shift, and go to state 17
+    LEFT_P    shift, and go to state 18
+
+    $default  reduce using rule 1 (include)
+
+    include               go to state 19
+    stmts                 go to state 20
+    stmt                  go to state 21
+    simple_stmt           go to state 22
+    compound_stmt         go to state 23
+    function_def          go to state 24
+    function_call         go to state 25
+    with_statement        go to state 26
+    try_stmt              go to state 27
+    try1_stmt             go to state 28
+    try2_stmt             go to state 29
+    try3_stmt             go to state 30
+    while_statement       go to state 31
+    for_statement         go to state 32
+    class_def             go to state 33
+    match_statement       go to state 34
+    case_statements       go to state 35
+    case_statement        go to state 36
+    if_statement          go to state 37
+    assignment            go to state 38
+    single_assignment     go to state 39
+    multi_assignment      go to state 40
+    augmented_assignment  go to state 41
+    targets               go to state 42
+    target                go to state 43
+    return_stmt           go to state 44
+    yield_statement       go to state 45
+    global_statement      go to state 46
+    nonlocal_statement    go to state 47
+
+
+state 1
+
+   26 function_def: DEF . id LEFT_P parameters RIGHT_P return_type block
+
+    ID  shift, and go to state 48
+
+    id  go to state 49
+
+
+state 2
+
+   49 function_call: ID . LEFT_P args RIGHT_P
+  153 augmented_assignment: ID . PLUS_ASSIGN expression
+  154                     | ID . MINUS_ASSIGN expression
+  155                     | ID . TIMES_ASSIGN expression
+  156                     | ID . DIVIDE_ASSIGN expression
+  157                     | ID . MODULO_ASSIGN expression
+  158                     | ID . POWER_ASSIGN expression
+  159                     | ID . AND_ASSIGN expression
+  160                     | ID . OR_ASSIGN expression
+  161                     | ID . XOR_ASSIGN expression
+  162                     | ID . LEFT_SHIFT_ASSIGN expression
+  163                     | ID . RIGHT_SHIFT_ASSIGN expression
+  168 target: ID .
+
+    PLUS_ASSIGN         shift, and go to state 50
+    MINUS_ASSIGN        shift, and go to state 51
+    TIMES_ASSIGN        shift, and go to state 52
+    DIVIDE_ASSIGN       shift, and go to state 53
+    MODULO_ASSIGN       shift, and go to state 54
+    POWER_ASSIGN        shift, and go to state 55
+    AND_ASSIGN          shift, and go to state 56
+    OR_ASSIGN           shift, and go to state 57
+    XOR_ASSIGN          shift, and go to state 58
+    LEFT_SHIFT_ASSIGN   shift, and go to state 59
+    RIGHT_SHIFT_ASSIGN  shift, and go to state 60
+    LEFT_P              shift, and go to state 61
+
+    $default  reduce using rule 168 (target)
+
+
+state 3
+
+   27 function_def: ASYNC . DEF ID LEFT_P parameters RIGHT_P return_type block
+   51 with_statement: ASYNC . WITH with_statement_body COLON if_block
+   82 for_statement: ASYNC . FOR targets IN star_expressions for_block
+
+    DEF   shift, and go to state 62
+    FOR   shift, and go to state 63
+    WITH  shift, and go to state 64
+
+
+state 4
+
+   11 simple_stmt: BREAK .
+
+    $default  reduce using rule 11 (simple_stmt)
+
+
+state 5
+
+  103 class_def: CLASS . id arguments block
+
+    ID  shift, and go to state 48
+
+    id  go to state 65
+
+
+state 6
+
+   12 simple_stmt: CONTINUE .
+
+    $default  reduce using rule 12 (simple_stmt)
+
+
+state 7
+
+   81 for_statement: FOR . targets IN star_expressions for_block
+   83              | FOR . targets IN RANGE LEFT_P INT COMA INT RIGHT_P for_block
+   84              | FOR . targets IN RANGE LEFT_P INT COMA INT COMA INT RIGHT_P for_block
+
+    ID      shift, and go to state 66
+    LEFT_P  shift, and go to state 18
+
+    targets  go to state 67
+    target   go to state 68
+
+
+state 8
+
+  171 global_statement: GLOBAL . global_list
+
+    ID  shift, and go to state 69
+
+    global_list  go to state 70
+
+
+state 9
+
+  126 if_statement: IF . expression if_block elif_statement
+  127             | IF . expression if_block else_statement
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 82
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 10
+
+  169 return_stmt: RETURN . expressions
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expressions  go to state 96
+    expression   go to state 97
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 11
+
+   67 try1_stmt: TRY . block except_statement_plus_for_try1 else_statement op_finally
+   68 try2_stmt: TRY . block except_statement_plus_for_try2 else_statement op_finally
+   69 try3_stmt: TRY . block FINALLY block
+
+    INDENT   shift, and go to state 98
+    NEWLINE  shift, and go to state 99
+
+    block  go to state 100
+
+
+state 12
+
+   80 while_statement: WHILE . expression for_block
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 101
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 13
+
+  170 yield_statement: YIELD . expressions
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expressions  go to state 102
+    expression   go to state 97
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 14
+
+  125 case_statement: CASE . target block
+
+    ID      shift, and go to state 66
+    LEFT_P  shift, and go to state 18
+
+    target  go to state 103
+
+
+state 15
+
+   50 with_statement: WITH . with_statement_body if_block
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 104
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    LEFT_P       shift, and go to state 105
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    with_statement_body  go to state 106
+    with_body            go to state 107
+    with_stmt_contents   go to state 108
+    with_item            go to state 109
+    id                   go to state 110
+    expression           go to state 111
+    disjunction          go to state 83
+    conjunction          go to state 84
+    inversion            go to state 85
+    comparison           go to state 86
+    bitwise_or           go to state 87
+    bitwise_xor          go to state 88
+    bitwise_and          go to state 89
+    shift_expr           go to state 90
+    sum                  go to state 91
+    term                 go to state 92
+    factor               go to state 93
+    power                go to state 94
+    atom                 go to state 95
+
+
+state 16
+
+  121 match_statement: MATCH . expression match_block
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 112
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 17
+
+  174 nonlocal_statement: NONLOCAL . nonlocal_list
+
+    ID  shift, and go to state 113
+
+    nonlocal_list  go to state 114
+
+
+state 18
+
+  166 target: LEFT_P . targets RIGHT_P
+
+    ID      shift, and go to state 66
+    LEFT_P  shift, and go to state 18
+
+    targets  go to state 115
+    target   go to state 68
+
+
+state 19
+
+    0 $accept: include . $end
+
+    $end  shift, and go to state 116
+
+
+state 20
+
+    2 include: stmts .
+    6 stmts: stmts . stmt
+
+    DEF       shift, and go to state 1
+    ID        shift, and go to state 2
+    ASYNC     shift, and go to state 3
+    BREAK     shift, and go to state 4
+    CLASS     shift, and go to state 5
+    CONTINUE  shift, and go to state 6
+    FOR       shift, and go to state 7
+    GLOBAL    shift, and go to state 8
+    IF        shift, and go to state 9
+    RETURN    shift, and go to state 10
+    TRY       shift, and go to state 11
+    WHILE     shift, and go to state 12
+    YIELD     shift, and go to state 13
+    CASE      shift, and go to state 14
+    WITH      shift, and go to state 15
+    MATCH     shift, and go to state 16
+    NONLOCAL  shift, and go to state 17
+    LEFT_P    shift, and go to state 18
+
+    $default  reduce using rule 2 (include)
+
+    stmt                  go to state 117
+    simple_stmt           go to state 22
+    compound_stmt         go to state 23
+    function_def          go to state 24
+    function_call         go to state 25
+    with_statement        go to state 26
+    try_stmt              go to state 27
+    try1_stmt             go to state 28
+    try2_stmt             go to state 29
+    try3_stmt             go to state 30
+    while_statement       go to state 31
+    for_statement         go to state 32
+    class_def             go to state 33
+    match_statement       go to state 34
+    case_statements       go to state 35
+    case_statement        go to state 36
+    if_statement          go to state 37
+    assignment            go to state 38
+    single_assignment     go to state 39
+    multi_assignment      go to state 40
+    augmented_assignment  go to state 41
+    targets               go to state 42
+    target                go to state 43
+    return_stmt           go to state 44
+    yield_statement       go to state 45
+    global_statement      go to state 46
+    nonlocal_statement    go to state 47
+
+
+state 21
+
+    5 stmts: stmt .
+
+    $default  reduce using rule 5 (stmts)
+
+
+state 22
+
+    7 stmt: simple_stmt . NEWLINE
+
+    NEWLINE  shift, and go to state 118
+
+
+state 23
+
+    8 stmt: compound_stmt .
+
+    $default  reduce using rule 8 (stmt)
+
+
+state 24
+
+   19 compound_stmt: function_def .
+
+    $default  reduce using rule 19 (compound_stmt)
+
+
+state 25
+
+   17 simple_stmt: function_call .
+
+    $default  reduce using rule 17 (simple_stmt)
+
+
+state 26
+
+   24 compound_stmt: with_statement .
+
+    $default  reduce using rule 24 (compound_stmt)
+
+
+state 27
+
+   23 compound_stmt: try_stmt .
+
+    $default  reduce using rule 23 (compound_stmt)
+
+
+state 28
+
+   64 try_stmt: try1_stmt .
+
+    $default  reduce using rule 64 (try_stmt)
+
+
+state 29
+
+   65 try_stmt: try2_stmt .
+
+    $default  reduce using rule 65 (try_stmt)
+
+
+state 30
+
+   66 try_stmt: try3_stmt .
+
+    $default  reduce using rule 66 (try_stmt)
+
+
+state 31
+
+   20 compound_stmt: while_statement .
+
+    $default  reduce using rule 20 (compound_stmt)
+
+
+state 32
+
+   21 compound_stmt: for_statement .
+
+    $default  reduce using rule 21 (compound_stmt)
+
+
+state 33
+
+   25 compound_stmt: class_def .
+
+    $default  reduce using rule 25 (compound_stmt)
+
+
+state 34
+
+   22 compound_stmt: match_statement .
+
+    $default  reduce using rule 22 (compound_stmt)
+
+
+state 35
+
+   16 simple_stmt: case_statements .
+  124 case_statements: case_statements . case_statement
+
+    CASE  shift, and go to state 14
+
+    $default  reduce using rule 16 (simple_stmt)
+
+    case_statement  go to state 119
+
+
+state 36
+
+  123 case_statements: case_statement .
+
+    $default  reduce using rule 123 (case_statements)
+
+
+state 37
+
+   18 compound_stmt: if_statement .
+
+    $default  reduce using rule 18 (compound_stmt)
+
+
+state 38
+
+    9 simple_stmt: assignment .
+
+    $default  reduce using rule 9 (simple_stmt)
+
+
+state 39
+
+  146 assignment: single_assignment .
+
+    $default  reduce using rule 146 (assignment)
+
+
+state 40
+
+  147 assignment: multi_assignment .
+
+    $default  reduce using rule 147 (assignment)
+
+
+state 41
+
+  148 assignment: augmented_assignment .
+
+    $default  reduce using rule 148 (assignment)
+
+
+state 42
+
+  151 multi_assignment: targets . ASSIGN expressions
+  152                 | targets . COLON expressions
+  165 targets: targets . COMA target
+
+    ASSIGN  shift, and go to state 120
+    COLON   shift, and go to state 121
+    COMA    shift, and go to state 122
+
+
+state 43
+
+  149 single_assignment: target . ASSIGN expression
+  150                  | target . COLON expression
+  164 targets: target .
+  167 target: target . DOT ID
+
+    DOT     shift, and go to state 123
+    ASSIGN  shift, and go to state 124
+    COLON   shift, and go to state 125
+
+    ASSIGN    [reduce using rule 164 (targets)]
+    COLON     [reduce using rule 164 (targets)]
+    $default  reduce using rule 164 (targets)
+
+
+state 44
+
+   10 simple_stmt: return_stmt .
+
+    $default  reduce using rule 10 (simple_stmt)
+
+
+state 45
+
+   13 simple_stmt: yield_statement .
+
+    $default  reduce using rule 13 (simple_stmt)
+
+
+state 46
+
+   14 simple_stmt: global_statement .
+
+    $default  reduce using rule 14 (simple_stmt)
+
+
+state 47
+
+   15 simple_stmt: nonlocal_statement .
+
+    $default  reduce using rule 15 (simple_stmt)
+
+
+state 48
+
+  104 id: ID .
+
+    $default  reduce using rule 104 (id)
+
+
+state 49
+
+   26 function_def: DEF id . LEFT_P parameters RIGHT_P return_type block
+  105 id: id . ID
+
+    ID      shift, and go to state 126
+    LEFT_P  shift, and go to state 127
+
+
+state 50
+
+  153 augmented_assignment: ID PLUS_ASSIGN . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 128
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 51
+
+  154 augmented_assignment: ID MINUS_ASSIGN . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 129
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 52
+
+  155 augmented_assignment: ID TIMES_ASSIGN . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 130
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 53
+
+  156 augmented_assignment: ID DIVIDE_ASSIGN . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 131
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 54
+
+  157 augmented_assignment: ID MODULO_ASSIGN . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 132
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 55
+
+  158 augmented_assignment: ID POWER_ASSIGN . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 133
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 56
+
+  159 augmented_assignment: ID AND_ASSIGN . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 134
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 57
+
+  160 augmented_assignment: ID OR_ASSIGN . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 135
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 58
+
+  161 augmented_assignment: ID XOR_ASSIGN . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 136
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 59
+
+  162 augmented_assignment: ID LEFT_SHIFT_ASSIGN . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 137
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 60
+
+  163 augmented_assignment: ID RIGHT_SHIFT_ASSIGN . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 138
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 61
+
+   49 function_call: ID LEFT_P . args RIGHT_P
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    $default  reduce using rule 111 (args)
+
+    args         go to state 139
+    args_list    go to state 140
+    expression   go to state 141
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 62
+
+   27 function_def: ASYNC DEF . ID LEFT_P parameters RIGHT_P return_type block
+
+    ID  shift, and go to state 142
+
+
+state 63
+
+   82 for_statement: ASYNC FOR . targets IN star_expressions for_block
+
+    ID      shift, and go to state 66
+    LEFT_P  shift, and go to state 18
+
+    targets  go to state 143
+    target   go to state 68
+
+
+state 64
+
+   51 with_statement: ASYNC WITH . with_statement_body COLON if_block
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 104
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    LEFT_P       shift, and go to state 105
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    with_statement_body  go to state 144
+    with_body            go to state 107
+    with_stmt_contents   go to state 108
+    with_item            go to state 109
+    id                   go to state 110
+    expression           go to state 111
+    disjunction          go to state 83
+    conjunction          go to state 84
+    inversion            go to state 85
+    comparison           go to state 86
+    bitwise_or           go to state 87
+    bitwise_xor          go to state 88
+    bitwise_and          go to state 89
+    shift_expr           go to state 90
+    sum                  go to state 91
+    term                 go to state 92
+    factor               go to state 93
+    power                go to state 94
+    atom                 go to state 95
+
+
+state 65
+
+  103 class_def: CLASS id . arguments block
+  105 id: id . ID
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 145
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    LEFT_P       shift, and go to state 146
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    INDENT    reduce using rule 106 (arguments)
+    INDENT    [reduce using rule 111 (args)]
+    NEWLINE   reduce using rule 106 (arguments)
+    NEWLINE   [reduce using rule 111 (args)]
+    COMA      reduce using rule 111 (args)
+    $default  reduce using rule 106 (arguments)
+
+    arguments    go to state 147
+    args         go to state 148
+    args_list    go to state 140
+    expression   go to state 141
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 66
+
+  168 target: ID .
+
+    $default  reduce using rule 168 (target)
+
+
+state 67
+
+   81 for_statement: FOR targets . IN star_expressions for_block
+   83              | FOR targets . IN RANGE LEFT_P INT COMA INT RIGHT_P for_block
+   84              | FOR targets . IN RANGE LEFT_P INT COMA INT COMA INT RIGHT_P for_block
+  165 targets: targets . COMA target
+
+    IN    shift, and go to state 149
+    COMA  shift, and go to state 122
+
+
+state 68
+
+  164 targets: target .
+  167 target: target . DOT ID
+
+    DOT  shift, and go to state 123
+
+    $default  reduce using rule 164 (targets)
+
+
+state 69
+
+  172 global_list: ID .
+
+    $default  reduce using rule 172 (global_list)
+
+
+state 70
+
+  171 global_statement: GLOBAL global_list .
+  173 global_list: global_list . COMA ID
+
+    COMA  shift, and go to state 150
+
+    $default  reduce using rule 171 (global_statement)
+
+
+state 71
+
+  238 atom: INT .
+
+    $default  reduce using rule 238 (atom)
+
+
+state 72
+
+  239 atom: FLOAT .
+
+    $default  reduce using rule 239 (atom)
+
+
+state 73
+
+  237 atom: STRING .
+
+    $default  reduce using rule 237 (atom)
+
+
+state 74
+
+  236 atom: ID .
+
+    $default  reduce using rule 236 (atom)
+
+
+state 75
+
+  233 atom: TRUE_TOKEN .
+
+    $default  reduce using rule 233 (atom)
+
+
+state 76
+
+  234 atom: FALSE_TOKEN .
+
+    $default  reduce using rule 234 (atom)
+
+
+state 77
+
+  235 atom: NONE .
+
+    $default  reduce using rule 235 (atom)
+
+
+state 78
+
+  185 inversion: NOT . inversion
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    inversion    go to state 151
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 79
+
+  227 factor: '+' . factor
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    factor  go to state 152
+    power   go to state 94
+    atom    go to state 95
+
+
+state 80
+
+  228 factor: '-' . factor
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    factor  go to state 153
+    power   go to state 94
+    atom    go to state 95
+
+
+state 81
+
+  229 factor: '~' . factor
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    factor  go to state 154
+    power   go to state 94
+    atom    go to state 95
+
+
+state 82
+
+  126 if_statement: IF expression . if_block elif_statement
+  127             | IF expression . if_block else_statement
+
+    INDENT   shift, and go to state 155
+    NEWLINE  shift, and go to state 156
+
+    if_block  go to state 157
+
+
+state 83
+
+  179 expression: disjunction . IF disjunction ELSE expression
+  180           | disjunction .
+  181 disjunction: disjunction . OR conjunction
+
+    IF  shift, and go to state 158
+    OR  shift, and go to state 159
+
+    $default  reduce using rule 180 (expression)
+
+
+state 84
+
+  182 disjunction: conjunction .
+  183 conjunction: conjunction . AND inversion
+
+    AND  shift, and go to state 160
+
+    $default  reduce using rule 182 (disjunction)
+
+
+state 85
+
+  184 conjunction: inversion .
+
+    $default  reduce using rule 184 (conjunction)
+
+
+state 86
+
+  186 inversion: comparison .
+
+    $default  reduce using rule 186 (inversion)
+
+
+state 87
+
+  187 comparison: bitwise_or . compare_op_bitwise_or_pair
+  188           | bitwise_or .
+  209 bitwise_or: bitwise_or . '|' bitwise_xor
+
+    IN                     shift, and go to state 161
+    IS                     shift, and go to state 162
+    NOT                    shift, and go to state 163
+    GREATER_THAN           shift, and go to state 164
+    LESS_THAN              shift, and go to state 165
+    LESS_THAN_OR_EQUAL     shift, and go to state 166
+    GREATER_THAN_OR_EQUAL  shift, and go to state 167
+    NOT_EQUAL              shift, and go to state 168
+    EQUAL                  shift, and go to state 169
+    '|'                    shift, and go to state 170
+
+    $default  reduce using rule 188 (comparison)
+
+    compare_op_bitwise_or_pair  go to state 171
+    eq_bitwise_or               go to state 172
+    noteq_bitwise_or            go to state 173
+    lte_bitwise_or              go to state 174
+    lt_bitwise_or               go to state 175
+    gte_bitwise_or              go to state 176
+    gt_bitwise_or               go to state 177
+    notin_bitwise_or            go to state 178
+    in_bitwise_or               go to state 179
+    isnot_bitwise_or            go to state 180
+    is_bitwise_or               go to state 181
+
+
+state 88
+
+  210 bitwise_or: bitwise_xor .
+  211 bitwise_xor: bitwise_xor . '^' bitwise_and
+
+    '^'  shift, and go to state 182
+
+    $default  reduce using rule 210 (bitwise_or)
+
+
+state 89
+
+  212 bitwise_xor: bitwise_and .
+  213 bitwise_and: bitwise_and . '&' shift_expr
+
+    '&'  shift, and go to state 183
+
+    $default  reduce using rule 212 (bitwise_xor)
+
+
+state 90
+
+  214 bitwise_and: shift_expr .
+  215 shift_expr: shift_expr . '<' sum
+  216           | shift_expr . '>' sum
+
+    '<'  shift, and go to state 184
+    '>'  shift, and go to state 185
+
+    $default  reduce using rule 214 (bitwise_and)
+
+
+state 91
+
+  217 shift_expr: sum .
+  218 sum: sum . PLUS term
+  219    | sum . MINUS term
+
+    PLUS   shift, and go to state 186
+    MINUS  shift, and go to state 187
+
+    $default  reduce using rule 217 (shift_expr)
+
+
+state 92
+
+  220 sum: term .
+  221 term: term . MULTIPLY factor
+  222     | term . DIVIDE factor
+  223     | term . FLOOR_DIVISION factor
+  224     | term . MODULUS factor
+  225     | term . '@' factor
+
+    FLOOR_DIVISION  shift, and go to state 188
+    MODULUS         shift, and go to state 189
+    MULTIPLY        shift, and go to state 190
+    DIVIDE          shift, and go to state 191
+    '@'             shift, and go to state 192
+
+    $default  reduce using rule 220 (sum)
+
+
+state 93
+
+  226 term: factor .
+
+    $default  reduce using rule 226 (term)
+
+
+state 94
+
+  230 factor: power .
+
+    $default  reduce using rule 230 (factor)
+
+
+state 95
+
+  231 power: atom . EXPONENTIATION factor
+  232      | atom .
+
+    EXPONENTIATION  shift, and go to state 193
+
+    $default  reduce using rule 232 (power)
+
+
+state 96
+
+  169 return_stmt: RETURN expressions .
+  178 expressions: expressions . COMA expression
+
+    COMA  shift, and go to state 194
+
+    $default  reduce using rule 169 (return_stmt)
+
+
+state 97
+
+  177 expressions: expression .
+
+    $default  reduce using rule 177 (expressions)
+
+
+state 98
+
+    4 block: INDENT . stmts DEDENT
+
+    DEF       shift, and go to state 1
+    ID        shift, and go to state 2
+    ASYNC     shift, and go to state 3
+    BREAK     shift, and go to state 4
+    CLASS     shift, and go to state 5
+    CONTINUE  shift, and go to state 6
+    FOR       shift, and go to state 7
+    GLOBAL    shift, and go to state 8
+    IF        shift, and go to state 9
+    RETURN    shift, and go to state 10
+    TRY       shift, and go to state 11
+    WHILE     shift, and go to state 12
+    YIELD     shift, and go to state 13
+    CASE      shift, and go to state 14
+    WITH      shift, and go to state 15
+    MATCH     shift, and go to state 16
+    NONLOCAL  shift, and go to state 17
+    LEFT_P    shift, and go to state 18
+
+    stmts                 go to state 195
+    stmt                  go to state 21
+    simple_stmt           go to state 22
+    compound_stmt         go to state 23
+    function_def          go to state 24
+    function_call         go to state 25
+    with_statement        go to state 26
+    try_stmt              go to state 27
+    try1_stmt             go to state 28
+    try2_stmt             go to state 29
+    try3_stmt             go to state 30
+    while_statement       go to state 31
+    for_statement         go to state 32
+    class_def             go to state 33
+    match_statement       go to state 34
+    case_statements       go to state 35
+    case_statement        go to state 36
+    if_statement          go to state 37
+    assignment            go to state 38
+    single_assignment     go to state 39
+    multi_assignment      go to state 40
+    augmented_assignment  go to state 41
+    targets               go to state 42
+    target                go to state 43
+    return_stmt           go to state 44
+    yield_statement       go to state 45
+    global_statement      go to state 46
+    nonlocal_statement    go to state 47
+
+
+state 99
+
+    3 block: NEWLINE . INDENT stmts DEDENT
+
+    INDENT  shift, and go to state 196
+
+
+state 100
+
+   67 try1_stmt: TRY block . except_statement_plus_for_try1 else_statement op_finally
+   68 try2_stmt: TRY block . except_statement_plus_for_try2 else_statement op_finally
+   69 try3_stmt: TRY block . FINALLY block
+
+    EXCEPT   shift, and go to state 197
+    FINALLY  shift, and go to state 198
+
+    except_statement_plus_for_try1  go to state 199
+    except_statement_plus_for_try2  go to state 200
+
+
+state 101
+
+   80 while_statement: WHILE expression . for_block
+
+    INDENT   shift, and go to state 201
+    NEWLINE  shift, and go to state 202
+
+    for_block  go to state 203
+
+
+state 102
+
+  170 yield_statement: YIELD expressions .
+  178 expressions: expressions . COMA expression
+
+    COMA  shift, and go to state 194
+
+    $default  reduce using rule 170 (yield_statement)
+
+
+state 103
+
+  125 case_statement: CASE target . block
+  167 target: target . DOT ID
+
+    INDENT   shift, and go to state 98
+    DOT      shift, and go to state 123
+    NEWLINE  shift, and go to state 99
+
+    block  go to state 204
+
+
+state 104
+
+  104 id: ID .
+  236 atom: ID .
+
+    ID        reduce using rule 104 (id)
+    LEFT_P    reduce using rule 104 (id)
+    $default  reduce using rule 236 (atom)
+
+
+state 105
+
+   55 with_body: LEFT_P . with_stmt_contents RIGHT_P
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 104
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    with_stmt_contents  go to state 205
+    with_item           go to state 109
+    id                  go to state 110
+    expression          go to state 111
+    disjunction         go to state 83
+    conjunction         go to state 84
+    inversion           go to state 85
+    comparison          go to state 86
+    bitwise_or          go to state 87
+    bitwise_xor         go to state 88
+    bitwise_and         go to state 89
+    shift_expr          go to state 90
+    sum                 go to state 91
+    term                go to state 92
+    factor              go to state 93
+    power               go to state 94
+    atom                go to state 95
+
+
+state 106
+
+   50 with_statement: WITH with_statement_body . if_block
+   52 with_statement_body: with_statement_body . COMA with_body
+
+    INDENT   shift, and go to state 155
+    NEWLINE  shift, and go to state 156
+    COMA     shift, and go to state 206
+
+    if_block  go to state 207
+
+
+state 107
+
+   53 with_statement_body: with_body .
+
+    $default  reduce using rule 53 (with_statement_body)
+
+
+state 108
+
+   54 with_body: with_stmt_contents .
+   56 with_stmt_contents: with_stmt_contents . COMA with_item
+
+    COMA  shift, and go to state 208
+
+    COMA      [reduce using rule 54 (with_body)]
+    $default  reduce using rule 54 (with_body)
+
+
+state 109
+
+   57 with_stmt_contents: with_item .
+
+    $default  reduce using rule 57 (with_stmt_contents)
+
+
+state 110
+
+   58 with_item: id . LEFT_P inside_brackets RIGHT_P AS target
+  105 id: id . ID
+
+    ID      shift, and go to state 126
+    LEFT_P  shift, and go to state 209
+
+
+state 111
+
+   59 with_item: expression .
+   60          | expression . AS target
+
+    AS  shift, and go to state 210
+
+    $default  reduce using rule 59 (with_item)
+
+
+state 112
+
+  121 match_statement: MATCH expression . match_block
+
+    NEWLINE  shift, and go to state 211
+
+    match_block  go to state 212
+
+
+state 113
+
+  175 nonlocal_list: ID .
+
+    $default  reduce using rule 175 (nonlocal_list)
+
+
+state 114
+
+  174 nonlocal_statement: NONLOCAL nonlocal_list .
+  176 nonlocal_list: nonlocal_list . COMA ID
+
+    COMA  shift, and go to state 213
+
+    $default  reduce using rule 174 (nonlocal_statement)
+
+
+state 115
+
+  165 targets: targets . COMA target
+  166 target: LEFT_P targets . RIGHT_P
+
+    COMA     shift, and go to state 122
+    RIGHT_P  shift, and go to state 214
+
+
+state 116
+
+    0 $accept: include $end .
+
+    $default  accept
+
+
+state 117
+
+    6 stmts: stmts stmt .
+
+    $default  reduce using rule 6 (stmts)
+
+
+state 118
+
+    7 stmt: simple_stmt NEWLINE .
+
+    $default  reduce using rule 7 (stmt)
+
+
+state 119
+
+  124 case_statements: case_statements case_statement .
+
+    $default  reduce using rule 124 (case_statements)
+
+
+state 120
+
+  151 multi_assignment: targets ASSIGN . expressions
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expressions  go to state 215
+    expression   go to state 97
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 121
+
+  152 multi_assignment: targets COLON . expressions
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expressions  go to state 216
+    expression   go to state 97
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 122
+
+  165 targets: targets COMA . target
+
+    ID      shift, and go to state 66
+    LEFT_P  shift, and go to state 18
+
+    target  go to state 217
+
+
+state 123
+
+  167 target: target DOT . ID
+
+    ID  shift, and go to state 218
+
+
+state 124
+
+  149 single_assignment: target ASSIGN . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 219
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 125
+
+  150 single_assignment: target COLON . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 220
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 126
+
+  105 id: id ID .
+
+    $default  reduce using rule 105 (id)
+
+
+state 127
+
+   26 function_def: DEF id LEFT_P . parameters RIGHT_P return_type block
+
+    ID  shift, and go to state 221
+
+    $default  reduce using rule 36 (parameters)
+
+    parameters              go to state 222
+    default_parameters      go to state 223
+    non_default_parameters  go to state 224
+    default_parameter       go to state 225
+    non_default_parameter   go to state 226
+
+
+state 128
+
+  153 augmented_assignment: ID PLUS_ASSIGN expression .
+
+    $default  reduce using rule 153 (augmented_assignment)
+
+
+state 129
+
+  154 augmented_assignment: ID MINUS_ASSIGN expression .
+
+    $default  reduce using rule 154 (augmented_assignment)
+
+
+state 130
+
+  155 augmented_assignment: ID TIMES_ASSIGN expression .
+
+    $default  reduce using rule 155 (augmented_assignment)
+
+
+state 131
+
+  156 augmented_assignment: ID DIVIDE_ASSIGN expression .
+
+    $default  reduce using rule 156 (augmented_assignment)
+
+
+state 132
+
+  157 augmented_assignment: ID MODULO_ASSIGN expression .
+
+    $default  reduce using rule 157 (augmented_assignment)
+
+
+state 133
+
+  158 augmented_assignment: ID POWER_ASSIGN expression .
+
+    $default  reduce using rule 158 (augmented_assignment)
+
+
+state 134
+
+  159 augmented_assignment: ID AND_ASSIGN expression .
+
+    $default  reduce using rule 159 (augmented_assignment)
+
+
+state 135
+
+  160 augmented_assignment: ID OR_ASSIGN expression .
+
+    $default  reduce using rule 160 (augmented_assignment)
+
+
+state 136
+
+  161 augmented_assignment: ID XOR_ASSIGN expression .
+
+    $default  reduce using rule 161 (augmented_assignment)
+
+
+state 137
+
+  162 augmented_assignment: ID LEFT_SHIFT_ASSIGN expression .
+
+    $default  reduce using rule 162 (augmented_assignment)
+
+
+state 138
+
+  163 augmented_assignment: ID RIGHT_SHIFT_ASSIGN expression .
+
+    $default  reduce using rule 163 (augmented_assignment)
+
+
+state 139
+
+   49 function_call: ID LEFT_P args . RIGHT_P
+
+    RIGHT_P  shift, and go to state 227
+
+
+state 140
+
+  112 args: args_list .
+  114 args_list: args_list . COMA expression
+
+    COMA  shift, and go to state 228
+
+    COMA      [reduce using rule 112 (args)]
+    $default  reduce using rule 112 (args)
+
+
+state 141
+
+  113 args_list: expression .
+
+    $default  reduce using rule 113 (args_list)
+
+
+state 142
+
+   27 function_def: ASYNC DEF ID . LEFT_P parameters RIGHT_P return_type block
+
+    LEFT_P  shift, and go to state 229
+
+
+state 143
+
+   82 for_statement: ASYNC FOR targets . IN star_expressions for_block
+  165 targets: targets . COMA target
+
+    IN    shift, and go to state 230
+    COMA  shift, and go to state 122
+
+
+state 144
+
+   51 with_statement: ASYNC WITH with_statement_body . COLON if_block
+   52 with_statement_body: with_statement_body . COMA with_body
+
+    COLON  shift, and go to state 231
+    COMA   shift, and go to state 206
+
+
+state 145
+
+  105 id: id ID .
+  236 atom: ID .
+
+    INT          reduce using rule 105 (id)
+    INDENT       reduce using rule 105 (id)
+    INDENT       [reduce using rule 236 (atom)]
+    FLOAT        reduce using rule 105 (id)
+    STRING       reduce using rule 105 (id)
+    ID           reduce using rule 105 (id)
+    TRUE_TOKEN   reduce using rule 105 (id)
+    FALSE_TOKEN  reduce using rule 105 (id)
+    NONE         reduce using rule 105 (id)
+    NOT          reduce using rule 105 (id)
+    NOT          [reduce using rule 236 (atom)]
+    NEWLINE      reduce using rule 105 (id)
+    NEWLINE      [reduce using rule 236 (atom)]
+    COMA         reduce using rule 105 (id)
+    COMA         [reduce using rule 236 (atom)]
+    LEFT_P       reduce using rule 105 (id)
+    '+'          reduce using rule 105 (id)
+    '-'          reduce using rule 105 (id)
+    '~'          reduce using rule 105 (id)
+    $default     reduce using rule 236 (atom)
+
+
+state 146
+
+  107 arguments: LEFT_P . args RIGHT_P
+  108          | LEFT_P . kwargs RIGHT_P
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 232
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    DOUBLE_STAR  shift, and go to state 233
+    MULTIPLY     shift, and go to state 234
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    $default  reduce using rule 111 (args)
+
+    args         go to state 235
+    args_list    go to state 140
+    kwargs       go to state 236
+    kwarg_list   go to state 237
+    kwarg        go to state 238
+    expression   go to state 141
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 147
+
+  103 class_def: CLASS id arguments . block
+
+    INDENT   shift, and go to state 98
+    NEWLINE  shift, and go to state 99
+
+    block  go to state 239
+
+
+state 148
+
+  109 arguments: args . COMA kwargs
+  110          | args .
+
+    COMA  shift, and go to state 240
+
+    $default  reduce using rule 110 (arguments)
+
+
+state 149
+
+   81 for_statement: FOR targets IN . star_expressions for_block
+   83              | FOR targets IN . RANGE LEFT_P INT COMA INT RIGHT_P for_block
+   84              | FOR targets IN . RANGE LEFT_P INT COMA INT COMA INT RIGHT_P for_block
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    RANGE        shift, and go to state 241
+    NOT          shift, and go to state 78
+    '*'          shift, and go to state 242
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    star_expressions  go to state 243
+    star_expression   go to state 244
+    expression        go to state 245
+    disjunction       go to state 83
+    conjunction       go to state 84
+    inversion         go to state 85
+    comparison        go to state 86
+    bitwise_or        go to state 87
+    bitwise_xor       go to state 88
+    bitwise_and       go to state 89
+    shift_expr        go to state 90
+    sum               go to state 91
+    term              go to state 92
+    factor            go to state 93
+    power             go to state 94
+    atom              go to state 95
+
+
+state 150
+
+  173 global_list: global_list COMA . ID
+
+    ID  shift, and go to state 246
+
+
+state 151
+
+  185 inversion: NOT inversion .
+
+    $default  reduce using rule 185 (inversion)
+
+
+state 152
+
+  227 factor: '+' factor .
+
+    $default  reduce using rule 227 (factor)
+
+
+state 153
+
+  228 factor: '-' factor .
+
+    $default  reduce using rule 228 (factor)
+
+
+state 154
+
+  229 factor: '~' factor .
+
+    $default  reduce using rule 229 (factor)
+
+
+state 155
+
+  133 if_block: INDENT . if_stmts DEDENT
+
+    DEF     shift, and go to state 1
+    ID      shift, and go to state 2
+    ASYNC   shift, and go to state 3
+    CLASS   shift, and go to state 5
+    FOR     shift, and go to state 7
+    IF      shift, and go to state 9
+    TRY     shift, and go to state 11
+    WHILE   shift, and go to state 12
+    WITH    shift, and go to state 15
+    MATCH   shift, and go to state 16
+    LEFT_P  shift, and go to state 18
+
+    function_def          go to state 247
+    function_call         go to state 248
+    with_statement        go to state 249
+    try_stmt              go to state 250
+    try1_stmt             go to state 28
+    try2_stmt             go to state 29
+    try3_stmt             go to state 30
+    while_statement       go to state 251
+    for_statement         go to state 252
+    class_def             go to state 253
+    match_statement       go to state 254
+    if_statement          go to state 255
+    if_stmts              go to state 256
+    if_stmt               go to state 257
+    assignment            go to state 258
+    single_assignment     go to state 39
+    multi_assignment      go to state 40
+    augmented_assignment  go to state 41
+    targets               go to state 42
+    target                go to state 43
+
+
+state 156
+
+  132 if_block: NEWLINE . INDENT if_stmts DEDENT
+
+    INDENT  shift, and go to state 259
+
+
+state 157
+
+  126 if_statement: IF expression if_block . elif_statement
+  127             | IF expression if_block . else_statement
+
+    ELIF  shift, and go to state 260
+    ELSE  shift, and go to state 261
+
+    $default  reduce using rule 130 (else_statement)
+
+    elif_statement  go to state 262
+    else_statement  go to state 263
+
+
+state 158
+
+  179 expression: disjunction IF . disjunction ELSE expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    disjunction  go to state 264
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 159
+
+  181 disjunction: disjunction OR . conjunction
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    conjunction  go to state 265
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 160
+
+  183 conjunction: conjunction AND . inversion
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    inversion    go to state 266
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 161
+
+  206 in_bitwise_or: IN . bitwise_or
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    bitwise_or   go to state 267
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 162
+
+  207 isnot_bitwise_or: IS . NOT bitwise_or
+  208 is_bitwise_or: IS . bitwise_or
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 268
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    bitwise_or   go to state 269
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 163
+
+  205 notin_bitwise_or: NOT . IN bitwise_or
+
+    IN  shift, and go to state 270
+
+
+state 164
+
+  204 gt_bitwise_or: GREATER_THAN . bitwise_or
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    bitwise_or   go to state 271
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 165
+
+  202 lt_bitwise_or: LESS_THAN . bitwise_or
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    bitwise_or   go to state 272
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 166
+
+  201 lte_bitwise_or: LESS_THAN_OR_EQUAL . bitwise_or
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    bitwise_or   go to state 273
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 167
+
+  203 gte_bitwise_or: GREATER_THAN_OR_EQUAL . bitwise_or
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    bitwise_or   go to state 274
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 168
+
+  200 noteq_bitwise_or: NOT_EQUAL . bitwise_or
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    bitwise_or   go to state 275
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 169
+
+  199 eq_bitwise_or: EQUAL . bitwise_or
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    bitwise_or   go to state 276
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 170
+
+  209 bitwise_or: bitwise_or '|' . bitwise_xor
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    bitwise_xor  go to state 277
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 171
+
+  187 comparison: bitwise_or compare_op_bitwise_or_pair .
+
+    $default  reduce using rule 187 (comparison)
+
+
+state 172
+
+  189 compare_op_bitwise_or_pair: eq_bitwise_or .
+
+    $default  reduce using rule 189 (compare_op_bitwise_or_pair)
+
+
+state 173
+
+  190 compare_op_bitwise_or_pair: noteq_bitwise_or .
+
+    $default  reduce using rule 190 (compare_op_bitwise_or_pair)
+
+
+state 174
+
+  191 compare_op_bitwise_or_pair: lte_bitwise_or .
+
+    $default  reduce using rule 191 (compare_op_bitwise_or_pair)
+
+
+state 175
+
+  192 compare_op_bitwise_or_pair: lt_bitwise_or .
+
+    $default  reduce using rule 192 (compare_op_bitwise_or_pair)
+
+
+state 176
+
+  193 compare_op_bitwise_or_pair: gte_bitwise_or .
+
+    $default  reduce using rule 193 (compare_op_bitwise_or_pair)
+
+
+state 177
+
+  194 compare_op_bitwise_or_pair: gt_bitwise_or .
+
+    $default  reduce using rule 194 (compare_op_bitwise_or_pair)
+
+
+state 178
+
+  195 compare_op_bitwise_or_pair: notin_bitwise_or .
+
+    $default  reduce using rule 195 (compare_op_bitwise_or_pair)
+
+
+state 179
+
+  196 compare_op_bitwise_or_pair: in_bitwise_or .
+
+    $default  reduce using rule 196 (compare_op_bitwise_or_pair)
+
+
+state 180
+
+  197 compare_op_bitwise_or_pair: isnot_bitwise_or .
+
+    $default  reduce using rule 197 (compare_op_bitwise_or_pair)
+
+
+state 181
+
+  198 compare_op_bitwise_or_pair: is_bitwise_or .
+
+    $default  reduce using rule 198 (compare_op_bitwise_or_pair)
+
+
+state 182
+
+  211 bitwise_xor: bitwise_xor '^' . bitwise_and
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    bitwise_and  go to state 278
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 183
+
+  213 bitwise_and: bitwise_and '&' . shift_expr
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    shift_expr  go to state 279
+    sum         go to state 91
+    term        go to state 92
+    factor      go to state 93
+    power       go to state 94
+    atom        go to state 95
+
+
+state 184
+
+  215 shift_expr: shift_expr '<' . sum
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    sum     go to state 280
+    term    go to state 92
+    factor  go to state 93
+    power   go to state 94
+    atom    go to state 95
+
+
+state 185
+
+  216 shift_expr: shift_expr '>' . sum
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    sum     go to state 281
+    term    go to state 92
+    factor  go to state 93
+    power   go to state 94
+    atom    go to state 95
+
+
+state 186
+
+  218 sum: sum PLUS . term
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    term    go to state 282
+    factor  go to state 93
+    power   go to state 94
+    atom    go to state 95
+
+
+state 187
+
+  219 sum: sum MINUS . term
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    term    go to state 283
+    factor  go to state 93
+    power   go to state 94
+    atom    go to state 95
+
+
+state 188
+
+  223 term: term FLOOR_DIVISION . factor
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    factor  go to state 284
+    power   go to state 94
+    atom    go to state 95
+
+
+state 189
+
+  224 term: term MODULUS . factor
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    factor  go to state 285
+    power   go to state 94
+    atom    go to state 95
+
+
+state 190
+
+  221 term: term MULTIPLY . factor
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    factor  go to state 286
+    power   go to state 94
+    atom    go to state 95
+
+
+state 191
+
+  222 term: term DIVIDE . factor
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    factor  go to state 287
+    power   go to state 94
+    atom    go to state 95
+
+
+state 192
+
+  225 term: term '@' . factor
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    factor  go to state 288
+    power   go to state 94
+    atom    go to state 95
+
+
+state 193
+
+  231 power: atom EXPONENTIATION . factor
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    factor  go to state 289
+    power   go to state 94
+    atom    go to state 95
+
+
+state 194
+
+  178 expressions: expressions COMA . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 290
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 195
+
+    4 block: INDENT stmts . DEDENT
+    6 stmts: stmts . stmt
+
+    DEDENT    shift, and go to state 291
+    DEF       shift, and go to state 1
+    ID        shift, and go to state 2
+    ASYNC     shift, and go to state 3
+    BREAK     shift, and go to state 4
+    CLASS     shift, and go to state 5
+    CONTINUE  shift, and go to state 6
+    FOR       shift, and go to state 7
+    GLOBAL    shift, and go to state 8
+    IF        shift, and go to state 9
+    RETURN    shift, and go to state 10
+    TRY       shift, and go to state 11
+    WHILE     shift, and go to state 12
+    YIELD     shift, and go to state 13
+    CASE      shift, and go to state 14
+    WITH      shift, and go to state 15
+    MATCH     shift, and go to state 16
+    NONLOCAL  shift, and go to state 17
+    LEFT_P    shift, and go to state 18
+
+    stmt                  go to state 117
+    simple_stmt           go to state 22
+    compound_stmt         go to state 23
+    function_def          go to state 24
+    function_call         go to state 25
+    with_statement        go to state 26
+    try_stmt              go to state 27
+    try1_stmt             go to state 28
+    try2_stmt             go to state 29
+    try3_stmt             go to state 30
+    while_statement       go to state 31
+    for_statement         go to state 32
+    class_def             go to state 33
+    match_statement       go to state 34
+    case_statements       go to state 35
+    case_statement        go to state 36
+    if_statement          go to state 37
+    assignment            go to state 38
+    single_assignment     go to state 39
+    multi_assignment      go to state 40
+    augmented_assignment  go to state 41
+    targets               go to state 42
+    target                go to state 43
+    return_stmt           go to state 44
+    yield_statement       go to state 45
+    global_statement      go to state 46
+    nonlocal_statement    go to state 47
+
+
+state 196
+
+    3 block: NEWLINE INDENT . stmts DEDENT
+
+    DEF       shift, and go to state 1
+    ID        shift, and go to state 2
+    ASYNC     shift, and go to state 3
+    BREAK     shift, and go to state 4
+    CLASS     shift, and go to state 5
+    CONTINUE  shift, and go to state 6
+    FOR       shift, and go to state 7
+    GLOBAL    shift, and go to state 8
+    IF        shift, and go to state 9
+    RETURN    shift, and go to state 10
+    TRY       shift, and go to state 11
+    WHILE     shift, and go to state 12
+    YIELD     shift, and go to state 13
+    CASE      shift, and go to state 14
+    WITH      shift, and go to state 15
+    MATCH     shift, and go to state 16
+    NONLOCAL  shift, and go to state 17
+    LEFT_P    shift, and go to state 18
+
+    stmts                 go to state 292
+    stmt                  go to state 21
+    simple_stmt           go to state 22
+    compound_stmt         go to state 23
+    function_def          go to state 24
+    function_call         go to state 25
+    with_statement        go to state 26
+    try_stmt              go to state 27
+    try1_stmt             go to state 28
+    try2_stmt             go to state 29
+    try3_stmt             go to state 30
+    while_statement       go to state 31
+    for_statement         go to state 32
+    class_def             go to state 33
+    match_statement       go to state 34
+    case_statements       go to state 35
+    case_statement        go to state 36
+    if_statement          go to state 37
+    assignment            go to state 38
+    single_assignment     go to state 39
+    multi_assignment      go to state 40
+    augmented_assignment  go to state 41
+    targets               go to state 42
+    target                go to state 43
+    return_stmt           go to state 44
+    yield_statement       go to state 45
+    global_statement      go to state 46
+    nonlocal_statement    go to state 47
+
+
+state 197
+
+   70 except_statement_plus_for_try1: EXCEPT . op_expression_as block
+   71                               | EXCEPT . op_expression_as block except_statement_plus_for_try1
+   72 except_statement_plus_for_try2: EXCEPT . MULTIPLY expression op_as block
+   73                               | EXCEPT . MULTIPLY expression op_as COLON block except_statement_plus_for_try2
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    MULTIPLY     shift, and go to state 293
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    $default  reduce using rule 76 (op_expression_as)
+
+    op_expression_as  go to state 294
+    expression        go to state 295
+    disjunction       go to state 83
+    conjunction       go to state 84
+    inversion         go to state 85
+    comparison        go to state 86
+    bitwise_or        go to state 87
+    bitwise_xor       go to state 88
+    bitwise_and       go to state 89
+    shift_expr        go to state 90
+    sum               go to state 91
+    term              go to state 92
+    factor            go to state 93
+    power             go to state 94
+    atom              go to state 95
+
+
+state 198
+
+   69 try3_stmt: TRY block FINALLY . block
+
+    INDENT   shift, and go to state 98
+    NEWLINE  shift, and go to state 99
+
+    block  go to state 296
+
+
+state 199
+
+   67 try1_stmt: TRY block except_statement_plus_for_try1 . else_statement op_finally
+
+    ELSE  shift, and go to state 261
+
+    $default  reduce using rule 130 (else_statement)
+
+    else_statement  go to state 297
+
+
+state 200
+
+   68 try2_stmt: TRY block except_statement_plus_for_try2 . else_statement op_finally
+
+    ELSE  shift, and go to state 261
+
+    $default  reduce using rule 130 (else_statement)
+
+    else_statement  go to state 298
+
+
+state 201
+
+   90 for_block: INDENT . for_stmts DEDENT
+
+    ID        shift, and go to state 2
+    ASYNC     shift, and go to state 299
+    BREAK     shift, and go to state 300
+    CLASS     shift, and go to state 5
+    CONTINUE  shift, and go to state 301
+    FOR       shift, and go to state 7
+    IF        shift, and go to state 9
+    TRY       shift, and go to state 11
+    WITH      shift, and go to state 15
+    MATCH     shift, and go to state 16
+    LEFT_P    shift, and go to state 18
+
+    function_call         go to state 302
+    with_statement        go to state 303
+    try_stmt              go to state 304
+    try1_stmt             go to state 28
+    try2_stmt             go to state 29
+    try3_stmt             go to state 30
+    for_statement         go to state 305
+    for_stmts             go to state 306
+    for_stmt              go to state 307
+    class_def             go to state 308
+    match_statement       go to state 309
+    if_statement          go to state 310
+    assignment            go to state 311
+    single_assignment     go to state 39
+    multi_assignment      go to state 40
+    augmented_assignment  go to state 41
+    targets               go to state 42
+    target                go to state 43
+
+
+state 202
+
+   89 for_block: NEWLINE . INDENT for_stmts DEDENT
+
+    INDENT  shift, and go to state 312
+
+
+state 203
+
+   80 while_statement: WHILE expression for_block .
+
+    $default  reduce using rule 80 (while_statement)
+
+
+state 204
+
+  125 case_statement: CASE target block .
+
+    $default  reduce using rule 125 (case_statement)
+
+
+state 205
+
+   55 with_body: LEFT_P with_stmt_contents . RIGHT_P
+   56 with_stmt_contents: with_stmt_contents . COMA with_item
+
+    COMA     shift, and go to state 208
+    RIGHT_P  shift, and go to state 313
+
+
+state 206
+
+   52 with_statement_body: with_statement_body COMA . with_body
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 104
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    LEFT_P       shift, and go to state 105
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    with_body           go to state 314
+    with_stmt_contents  go to state 108
+    with_item           go to state 109
+    id                  go to state 110
+    expression          go to state 111
+    disjunction         go to state 83
+    conjunction         go to state 84
+    inversion           go to state 85
+    comparison          go to state 86
+    bitwise_or          go to state 87
+    bitwise_xor         go to state 88
+    bitwise_and         go to state 89
+    shift_expr          go to state 90
+    sum                 go to state 91
+    term                go to state 92
+    factor              go to state 93
+    power               go to state 94
+    atom                go to state 95
+
+
+state 207
+
+   50 with_statement: WITH with_statement_body if_block .
+
+    $default  reduce using rule 50 (with_statement)
+
+
+state 208
+
+   56 with_stmt_contents: with_stmt_contents COMA . with_item
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 104
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    with_item    go to state 315
+    id           go to state 110
+    expression   go to state 111
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 209
+
+   58 with_item: id LEFT_P . inside_brackets RIGHT_P AS target
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    $default  reduce using rule 61 (inside_brackets)
+
+    inside_brackets  go to state 316
+    expression       go to state 317
+    disjunction      go to state 83
+    conjunction      go to state 84
+    inversion        go to state 85
+    comparison       go to state 86
+    bitwise_or       go to state 87
+    bitwise_xor      go to state 88
+    bitwise_and      go to state 89
+    shift_expr       go to state 90
+    sum              go to state 91
+    term             go to state 92
+    factor           go to state 93
+    power            go to state 94
+    atom             go to state 95
+
+
+state 210
+
+   60 with_item: expression AS . target
+
+    ID      shift, and go to state 66
+    LEFT_P  shift, and go to state 18
+
+    target  go to state 318
+
+
+state 211
+
+  122 match_block: NEWLINE . INDENT case_statements DEDENT
+
+    INDENT  shift, and go to state 319
+
+
+state 212
+
+  121 match_statement: MATCH expression match_block .
+
+    $default  reduce using rule 121 (match_statement)
+
+
+state 213
+
+  176 nonlocal_list: nonlocal_list COMA . ID
+
+    ID  shift, and go to state 320
+
+
+state 214
+
+  166 target: LEFT_P targets RIGHT_P .
+
+    $default  reduce using rule 166 (target)
+
+
+state 215
+
+  151 multi_assignment: targets ASSIGN expressions .
+  178 expressions: expressions . COMA expression
+
+    COMA  shift, and go to state 194
+
+    $default  reduce using rule 151 (multi_assignment)
+
+
+state 216
+
+  152 multi_assignment: targets COLON expressions .
+  178 expressions: expressions . COMA expression
+
+    COMA  shift, and go to state 194
+
+    $default  reduce using rule 152 (multi_assignment)
+
+
+state 217
+
+  165 targets: targets COMA target .
+  167 target: target . DOT ID
+
+    DOT  shift, and go to state 123
+
+    $default  reduce using rule 165 (targets)
+
+
+state 218
+
+  167 target: target DOT ID .
+
+    $default  reduce using rule 167 (target)
+
+
+state 219
+
+  149 single_assignment: target ASSIGN expression .
+
+    $default  reduce using rule 149 (single_assignment)
+
+
+state 220
+
+  150 single_assignment: target COLON expression .
+
+    $default  reduce using rule 150 (single_assignment)
+
+
+state 221
+
+   45 default_parameter: ID . ASSIGN expression
+   46                  | ID . ASSIGN expression COLON types
+   47 non_default_parameter: ID .
+   48                      | ID . COLON types
+
+    ASSIGN  shift, and go to state 321
+    COLON   shift, and go to state 322
+
+    $default  reduce using rule 47 (non_default_parameter)
+
+
+state 222
+
+   26 function_def: DEF id LEFT_P parameters . RIGHT_P return_type block
+
+    RIGHT_P  shift, and go to state 323
+
+
+state 223
+
+   37 parameters: default_parameters .
+
+    $default  reduce using rule 37 (parameters)
+
+
+state 224
+
+   38 parameters: non_default_parameters .
+
+    $default  reduce using rule 38 (parameters)
+
+
+state 225
+
+   39 default_parameters: default_parameter . COMA default_parameters
+   40                   | default_parameter . COMA non_default_parameters
+   41                   | default_parameter .
+
+    COMA  shift, and go to state 324
+
+    $default  reduce using rule 41 (default_parameters)
+
+
+state 226
+
+   42 non_default_parameters: non_default_parameter . COMA non_default_parameters
+   43                       | non_default_parameter . COMA default_parameters
+   44                       | non_default_parameter .
+
+    COMA  shift, and go to state 325
+
+    $default  reduce using rule 44 (non_default_parameters)
+
+
+state 227
+
+   49 function_call: ID LEFT_P args RIGHT_P .
+
+    $default  reduce using rule 49 (function_call)
+
+
+state 228
+
+  114 args_list: args_list COMA . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 326
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 229
+
+   27 function_def: ASYNC DEF ID LEFT_P . parameters RIGHT_P return_type block
+
+    ID  shift, and go to state 221
+
+    $default  reduce using rule 36 (parameters)
+
+    parameters              go to state 327
+    default_parameters      go to state 223
+    non_default_parameters  go to state 224
+    default_parameter       go to state 225
+    non_default_parameter   go to state 226
+
+
+state 230
+
+   82 for_statement: ASYNC FOR targets IN . star_expressions for_block
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '*'          shift, and go to state 242
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    star_expressions  go to state 328
+    star_expression   go to state 244
+    expression        go to state 245
+    disjunction       go to state 83
+    conjunction       go to state 84
+    inversion         go to state 85
+    comparison        go to state 86
+    bitwise_or        go to state 87
+    bitwise_xor       go to state 88
+    bitwise_and       go to state 89
+    shift_expr        go to state 90
+    sum               go to state 91
+    term              go to state 92
+    factor            go to state 93
+    power             go to state 94
+    atom              go to state 95
+
+
+state 231
+
+   51 with_statement: ASYNC WITH with_statement_body COLON . if_block
+
+    INDENT   shift, and go to state 155
+    NEWLINE  shift, and go to state 156
+
+    if_block  go to state 329
+
+
+state 232
+
+  118 kwarg: ID . ASSIGN expression
+  236 atom: ID .
+
+    ASSIGN  shift, and go to state 330
+
+    $default  reduce using rule 236 (atom)
+
+
+state 233
+
+  120 kwarg: DOUBLE_STAR . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 331
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 234
+
+  119 kwarg: MULTIPLY . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 332
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 235
+
+  107 arguments: LEFT_P args . RIGHT_P
+
+    RIGHT_P  shift, and go to state 333
+
+
+state 236
+
+  108 arguments: LEFT_P kwargs . RIGHT_P
+
+    RIGHT_P  shift, and go to state 334
+
+
+state 237
+
+  115 kwargs: kwarg_list .
+  117 kwarg_list: kwarg_list . COMA kwarg
+
+    COMA  shift, and go to state 335
+
+    $default  reduce using rule 115 (kwargs)
+
+
+state 238
+
+  116 kwarg_list: kwarg .
+
+    $default  reduce using rule 116 (kwarg_list)
+
+
+state 239
+
+  103 class_def: CLASS id arguments block .
+
+    $default  reduce using rule 103 (class_def)
+
+
+state 240
+
+  109 arguments: args COMA . kwargs
+
+    ID           shift, and go to state 336
+    DOUBLE_STAR  shift, and go to state 233
+    MULTIPLY     shift, and go to state 234
+
+    kwargs      go to state 337
+    kwarg_list  go to state 237
+    kwarg       go to state 238
+
+
+state 241
+
+   83 for_statement: FOR targets IN RANGE . LEFT_P INT COMA INT RIGHT_P for_block
+   84              | FOR targets IN RANGE . LEFT_P INT COMA INT COMA INT RIGHT_P for_block
+
+    LEFT_P  shift, and go to state 338
+
+
+state 242
+
+   87 star_expression: '*' . bitwise_or
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    bitwise_or   go to state 339
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 243
+
+   81 for_statement: FOR targets IN star_expressions . for_block
+
+    INDENT   shift, and go to state 201
+    NEWLINE  shift, and go to state 202
+
+    for_block  go to state 340
+
+
+state 244
+
+   85 star_expressions: star_expression .
+   86                 | star_expression . COMA star_expressions
+
+    COMA  shift, and go to state 341
+
+    $default  reduce using rule 85 (star_expressions)
+
+
+state 245
+
+   88 star_expression: expression .
+
+    $default  reduce using rule 88 (star_expression)
+
+
+state 246
+
+  173 global_list: global_list COMA ID .
+
+    $default  reduce using rule 173 (global_list)
+
+
+state 247
+
+  139 if_stmt: function_def .
+
+    $default  reduce using rule 139 (if_stmt)
+
+
+state 248
+
+  137 if_stmt: function_call . NEWLINE
+
+    NEWLINE  shift, and go to state 342
+
+
+state 249
+
+  144 if_stmt: with_statement .
+
+    $default  reduce using rule 144 (if_stmt)
+
+
+state 250
+
+  143 if_stmt: try_stmt .
+
+    $default  reduce using rule 143 (if_stmt)
+
+
+state 251
+
+  140 if_stmt: while_statement .
+
+    $default  reduce using rule 140 (if_stmt)
+
+
+state 252
+
+  141 if_stmt: for_statement .
+
+    $default  reduce using rule 141 (if_stmt)
+
+
+state 253
+
+  145 if_stmt: class_def .
+
+    $default  reduce using rule 145 (if_stmt)
+
+
+state 254
+
+  142 if_stmt: match_statement .
+
+    $default  reduce using rule 142 (if_stmt)
+
+
+state 255
+
+  138 if_stmt: if_statement .
+
+    $default  reduce using rule 138 (if_stmt)
+
+
+state 256
+
+  133 if_block: INDENT if_stmts . DEDENT
+  135 if_stmts: if_stmts . if_stmt
+
+    DEDENT  shift, and go to state 343
+    DEF     shift, and go to state 1
+    ID      shift, and go to state 2
+    ASYNC   shift, and go to state 3
+    CLASS   shift, and go to state 5
+    FOR     shift, and go to state 7
+    IF      shift, and go to state 9
+    TRY     shift, and go to state 11
+    WHILE   shift, and go to state 12
+    WITH    shift, and go to state 15
+    MATCH   shift, and go to state 16
+    LEFT_P  shift, and go to state 18
+
+    function_def          go to state 247
+    function_call         go to state 248
+    with_statement        go to state 249
+    try_stmt              go to state 250
+    try1_stmt             go to state 28
+    try2_stmt             go to state 29
+    try3_stmt             go to state 30
+    while_statement       go to state 251
+    for_statement         go to state 252
+    class_def             go to state 253
+    match_statement       go to state 254
+    if_statement          go to state 255
+    if_stmt               go to state 344
+    assignment            go to state 258
+    single_assignment     go to state 39
+    multi_assignment      go to state 40
+    augmented_assignment  go to state 41
+    targets               go to state 42
+    target                go to state 43
+
+
+state 257
+
+  134 if_stmts: if_stmt .
+
+    $default  reduce using rule 134 (if_stmts)
+
+
+state 258
+
+  136 if_stmt: assignment . NEWLINE
+
+    NEWLINE  shift, and go to state 345
+
+
+state 259
+
+  132 if_block: NEWLINE INDENT . if_stmts DEDENT
+
+    DEF     shift, and go to state 1
+    ID      shift, and go to state 2
+    ASYNC   shift, and go to state 3
+    CLASS   shift, and go to state 5
+    FOR     shift, and go to state 7
+    IF      shift, and go to state 9
+    TRY     shift, and go to state 11
+    WHILE   shift, and go to state 12
+    WITH    shift, and go to state 15
+    MATCH   shift, and go to state 16
+    LEFT_P  shift, and go to state 18
+
+    function_def          go to state 247
+    function_call         go to state 248
+    with_statement        go to state 249
+    try_stmt              go to state 250
+    try1_stmt             go to state 28
+    try2_stmt             go to state 29
+    try3_stmt             go to state 30
+    while_statement       go to state 251
+    for_statement         go to state 252
+    class_def             go to state 253
+    match_statement       go to state 254
+    if_statement          go to state 255
+    if_stmts              go to state 346
+    if_stmt               go to state 257
+    assignment            go to state 258
+    single_assignment     go to state 39
+    multi_assignment      go to state 40
+    augmented_assignment  go to state 41
+    targets               go to state 42
+    target                go to state 43
+
+
+state 260
+
+  128 elif_statement: ELIF . expression if_block elif_statement
+  129               | ELIF . expression if_block else_statement
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 347
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 261
+
+  131 else_statement: ELSE . block
+
+    INDENT   shift, and go to state 98
+    NEWLINE  shift, and go to state 99
+
+    block  go to state 348
+
+
+state 262
+
+  126 if_statement: IF expression if_block elif_statement .
+
+    $default  reduce using rule 126 (if_statement)
+
+
+state 263
+
+  127 if_statement: IF expression if_block else_statement .
+
+    $default  reduce using rule 127 (if_statement)
+
+
+state 264
+
+  179 expression: disjunction IF disjunction . ELSE expression
+  181 disjunction: disjunction . OR conjunction
+
+    ELSE  shift, and go to state 349
+    OR    shift, and go to state 159
+
+
+state 265
+
+  181 disjunction: disjunction OR conjunction .
+  183 conjunction: conjunction . AND inversion
+
+    AND  shift, and go to state 160
+
+    $default  reduce using rule 181 (disjunction)
+
+
+state 266
+
+  183 conjunction: conjunction AND inversion .
+
+    $default  reduce using rule 183 (conjunction)
+
+
+state 267
+
+  206 in_bitwise_or: IN bitwise_or .
+  209 bitwise_or: bitwise_or . '|' bitwise_xor
+
+    '|'  shift, and go to state 170
+
+    $default  reduce using rule 206 (in_bitwise_or)
+
+
+state 268
+
+  207 isnot_bitwise_or: IS NOT . bitwise_or
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    bitwise_or   go to state 350
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 269
+
+  208 is_bitwise_or: IS bitwise_or .
+  209 bitwise_or: bitwise_or . '|' bitwise_xor
+
+    '|'  shift, and go to state 170
+
+    $default  reduce using rule 208 (is_bitwise_or)
+
+
+state 270
+
+  205 notin_bitwise_or: NOT IN . bitwise_or
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    bitwise_or   go to state 351
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 271
+
+  204 gt_bitwise_or: GREATER_THAN bitwise_or .
+  209 bitwise_or: bitwise_or . '|' bitwise_xor
+
+    '|'  shift, and go to state 170
+
+    $default  reduce using rule 204 (gt_bitwise_or)
+
+
+state 272
+
+  202 lt_bitwise_or: LESS_THAN bitwise_or .
+  209 bitwise_or: bitwise_or . '|' bitwise_xor
+
+    '|'  shift, and go to state 170
+
+    $default  reduce using rule 202 (lt_bitwise_or)
+
+
+state 273
+
+  201 lte_bitwise_or: LESS_THAN_OR_EQUAL bitwise_or .
+  209 bitwise_or: bitwise_or . '|' bitwise_xor
+
+    '|'  shift, and go to state 170
+
+    $default  reduce using rule 201 (lte_bitwise_or)
+
+
+state 274
+
+  203 gte_bitwise_or: GREATER_THAN_OR_EQUAL bitwise_or .
+  209 bitwise_or: bitwise_or . '|' bitwise_xor
+
+    '|'  shift, and go to state 170
+
+    $default  reduce using rule 203 (gte_bitwise_or)
+
+
+state 275
+
+  200 noteq_bitwise_or: NOT_EQUAL bitwise_or .
+  209 bitwise_or: bitwise_or . '|' bitwise_xor
+
+    '|'  shift, and go to state 170
+
+    $default  reduce using rule 200 (noteq_bitwise_or)
+
+
+state 276
+
+  199 eq_bitwise_or: EQUAL bitwise_or .
+  209 bitwise_or: bitwise_or . '|' bitwise_xor
+
+    '|'  shift, and go to state 170
+
+    $default  reduce using rule 199 (eq_bitwise_or)
+
+
+state 277
+
+  209 bitwise_or: bitwise_or '|' bitwise_xor .
+  211 bitwise_xor: bitwise_xor . '^' bitwise_and
+
+    '^'  shift, and go to state 182
+
+    $default  reduce using rule 209 (bitwise_or)
+
+
+state 278
+
+  211 bitwise_xor: bitwise_xor '^' bitwise_and .
+  213 bitwise_and: bitwise_and . '&' shift_expr
+
+    '&'  shift, and go to state 183
+
+    $default  reduce using rule 211 (bitwise_xor)
+
+
+state 279
+
+  213 bitwise_and: bitwise_and '&' shift_expr .
+  215 shift_expr: shift_expr . '<' sum
+  216           | shift_expr . '>' sum
+
+    '<'  shift, and go to state 184
+    '>'  shift, and go to state 185
+
+    $default  reduce using rule 213 (bitwise_and)
+
+
+state 280
+
+  215 shift_expr: shift_expr '<' sum .
+  218 sum: sum . PLUS term
+  219    | sum . MINUS term
+
+    PLUS   shift, and go to state 186
+    MINUS  shift, and go to state 187
+
+    $default  reduce using rule 215 (shift_expr)
+
+
+state 281
+
+  216 shift_expr: shift_expr '>' sum .
+  218 sum: sum . PLUS term
+  219    | sum . MINUS term
+
+    PLUS   shift, and go to state 186
+    MINUS  shift, and go to state 187
+
+    $default  reduce using rule 216 (shift_expr)
+
+
+state 282
+
+  218 sum: sum PLUS term .
+  221 term: term . MULTIPLY factor
+  222     | term . DIVIDE factor
+  223     | term . FLOOR_DIVISION factor
+  224     | term . MODULUS factor
+  225     | term . '@' factor
+
+    FLOOR_DIVISION  shift, and go to state 188
+    MODULUS         shift, and go to state 189
+    MULTIPLY        shift, and go to state 190
+    DIVIDE          shift, and go to state 191
+    '@'             shift, and go to state 192
+
+    $default  reduce using rule 218 (sum)
+
+
+state 283
+
+  219 sum: sum MINUS term .
+  221 term: term . MULTIPLY factor
+  222     | term . DIVIDE factor
+  223     | term . FLOOR_DIVISION factor
+  224     | term . MODULUS factor
+  225     | term . '@' factor
+
+    FLOOR_DIVISION  shift, and go to state 188
+    MODULUS         shift, and go to state 189
+    MULTIPLY        shift, and go to state 190
+    DIVIDE          shift, and go to state 191
+    '@'             shift, and go to state 192
+
+    $default  reduce using rule 219 (sum)
+
+
+state 284
+
+  223 term: term FLOOR_DIVISION factor .
+
+    $default  reduce using rule 223 (term)
+
+
+state 285
+
+  224 term: term MODULUS factor .
+
+    $default  reduce using rule 224 (term)
+
+
+state 286
+
+  221 term: term MULTIPLY factor .
+
+    $default  reduce using rule 221 (term)
+
+
+state 287
+
+  222 term: term DIVIDE factor .
+
+    $default  reduce using rule 222 (term)
+
+
+state 288
+
+  225 term: term '@' factor .
+
+    $default  reduce using rule 225 (term)
+
+
+state 289
+
+  231 power: atom EXPONENTIATION factor .
+
+    $default  reduce using rule 231 (power)
+
+
+state 290
+
+  178 expressions: expressions COMA expression .
+
+    $default  reduce using rule 178 (expressions)
+
+
+state 291
+
+    4 block: INDENT stmts DEDENT .
+
+    $default  reduce using rule 4 (block)
+
+
+state 292
+
+    3 block: NEWLINE INDENT stmts . DEDENT
+    6 stmts: stmts . stmt
+
+    DEDENT    shift, and go to state 352
+    DEF       shift, and go to state 1
+    ID        shift, and go to state 2
+    ASYNC     shift, and go to state 3
+    BREAK     shift, and go to state 4
+    CLASS     shift, and go to state 5
+    CONTINUE  shift, and go to state 6
+    FOR       shift, and go to state 7
+    GLOBAL    shift, and go to state 8
+    IF        shift, and go to state 9
+    RETURN    shift, and go to state 10
+    TRY       shift, and go to state 11
+    WHILE     shift, and go to state 12
+    YIELD     shift, and go to state 13
+    CASE      shift, and go to state 14
+    WITH      shift, and go to state 15
+    MATCH     shift, and go to state 16
+    NONLOCAL  shift, and go to state 17
+    LEFT_P    shift, and go to state 18
+
+    stmt                  go to state 117
+    simple_stmt           go to state 22
+    compound_stmt         go to state 23
+    function_def          go to state 24
+    function_call         go to state 25
+    with_statement        go to state 26
+    try_stmt              go to state 27
+    try1_stmt             go to state 28
+    try2_stmt             go to state 29
+    try3_stmt             go to state 30
+    while_statement       go to state 31
+    for_statement         go to state 32
+    class_def             go to state 33
+    match_statement       go to state 34
+    case_statements       go to state 35
+    case_statement        go to state 36
+    if_statement          go to state 37
+    assignment            go to state 38
+    single_assignment     go to state 39
+    multi_assignment      go to state 40
+    augmented_assignment  go to state 41
+    targets               go to state 42
+    target                go to state 43
+    return_stmt           go to state 44
+    yield_statement       go to state 45
+    global_statement      go to state 46
+    nonlocal_statement    go to state 47
+
+
+state 293
+
+   72 except_statement_plus_for_try2: EXCEPT MULTIPLY . expression op_as block
+   73                               | EXCEPT MULTIPLY . expression op_as COLON block except_statement_plus_for_try2
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 353
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 294
+
+   70 except_statement_plus_for_try1: EXCEPT op_expression_as . block
+   71                               | EXCEPT op_expression_as . block except_statement_plus_for_try1
+
+    INDENT   shift, and go to state 98
+    NEWLINE  shift, and go to state 99
+
+    block  go to state 354
+
+
+state 295
+
+   77 op_expression_as: expression . op_as
+
+    AS  shift, and go to state 355
+
+    $default  reduce using rule 74 (op_as)
+
+    op_as  go to state 356
+
+
+state 296
+
+   69 try3_stmt: TRY block FINALLY block .
+
+    $default  reduce using rule 69 (try3_stmt)
+
+
+state 297
+
+   67 try1_stmt: TRY block except_statement_plus_for_try1 else_statement . op_finally
+
+    FINALLY  shift, and go to state 357
+
+    $default  reduce using rule 78 (op_finally)
+
+    op_finally  go to state 358
+
+
+state 298
+
+   68 try2_stmt: TRY block except_statement_plus_for_try2 else_statement . op_finally
+
+    FINALLY  shift, and go to state 357
+
+    $default  reduce using rule 78 (op_finally)
+
+    op_finally  go to state 359
+
+
+state 299
+
+   51 with_statement: ASYNC . WITH with_statement_body COLON if_block
+   82 for_statement: ASYNC . FOR targets IN star_expressions for_block
+
+    FOR   shift, and go to state 63
+    WITH  shift, and go to state 64
+
+
+state 300
+
+   95 for_stmt: BREAK . NEWLINE
+
+    NEWLINE  shift, and go to state 360
+
+
+state 301
+
+   96 for_stmt: CONTINUE . NEWLINE
+
+    NEWLINE  shift, and go to state 361
+
+
+state 302
+
+   94 for_stmt: function_call . NEWLINE
+
+    NEWLINE  shift, and go to state 362
+
+
+state 303
+
+  101 for_stmt: with_statement .
+
+    $default  reduce using rule 101 (for_stmt)
+
+
+state 304
+
+  100 for_stmt: try_stmt .
+
+    $default  reduce using rule 100 (for_stmt)
+
+
+state 305
+
+   98 for_stmt: for_statement .
+
+    $default  reduce using rule 98 (for_stmt)
+
+
+state 306
+
+   90 for_block: INDENT for_stmts . DEDENT
+   92 for_stmts: for_stmts . for_stmt
+
+    DEDENT    shift, and go to state 363
+    ID        shift, and go to state 2
+    ASYNC     shift, and go to state 299
+    BREAK     shift, and go to state 300
+    CLASS     shift, and go to state 5
+    CONTINUE  shift, and go to state 301
+    FOR       shift, and go to state 7
+    IF        shift, and go to state 9
+    TRY       shift, and go to state 11
+    WITH      shift, and go to state 15
+    MATCH     shift, and go to state 16
+    LEFT_P    shift, and go to state 18
+
+    function_call         go to state 302
+    with_statement        go to state 303
+    try_stmt              go to state 304
+    try1_stmt             go to state 28
+    try2_stmt             go to state 29
+    try3_stmt             go to state 30
+    for_statement         go to state 305
+    for_stmt              go to state 364
+    class_def             go to state 308
+    match_statement       go to state 309
+    if_statement          go to state 310
+    assignment            go to state 311
+    single_assignment     go to state 39
+    multi_assignment      go to state 40
+    augmented_assignment  go to state 41
+    targets               go to state 42
+    target                go to state 43
+
+
+state 307
+
+   91 for_stmts: for_stmt .
+
+    $default  reduce using rule 91 (for_stmts)
+
+
+state 308
+
+  102 for_stmt: class_def .
+
+    $default  reduce using rule 102 (for_stmt)
+
+
+state 309
+
+   99 for_stmt: match_statement .
+
+    $default  reduce using rule 99 (for_stmt)
+
+
+state 310
+
+   97 for_stmt: if_statement .
+
+    $default  reduce using rule 97 (for_stmt)
+
+
+state 311
+
+   93 for_stmt: assignment . NEWLINE
+
+    NEWLINE  shift, and go to state 365
+
+
+state 312
+
+   89 for_block: NEWLINE INDENT . for_stmts DEDENT
+
+    ID        shift, and go to state 2
+    ASYNC     shift, and go to state 299
+    BREAK     shift, and go to state 300
+    CLASS     shift, and go to state 5
+    CONTINUE  shift, and go to state 301
+    FOR       shift, and go to state 7
+    IF        shift, and go to state 9
+    TRY       shift, and go to state 11
+    WITH      shift, and go to state 15
+    MATCH     shift, and go to state 16
+    LEFT_P    shift, and go to state 18
+
+    function_call         go to state 302
+    with_statement        go to state 303
+    try_stmt              go to state 304
+    try1_stmt             go to state 28
+    try2_stmt             go to state 29
+    try3_stmt             go to state 30
+    for_statement         go to state 305
+    for_stmts             go to state 366
+    for_stmt              go to state 307
+    class_def             go to state 308
+    match_statement       go to state 309
+    if_statement          go to state 310
+    assignment            go to state 311
+    single_assignment     go to state 39
+    multi_assignment      go to state 40
+    augmented_assignment  go to state 41
+    targets               go to state 42
+    target                go to state 43
+
+
+state 313
+
+   55 with_body: LEFT_P with_stmt_contents RIGHT_P .
+
+    $default  reduce using rule 55 (with_body)
+
+
+state 314
+
+   52 with_statement_body: with_statement_body COMA with_body .
+
+    $default  reduce using rule 52 (with_statement_body)
+
+
+state 315
+
+   56 with_stmt_contents: with_stmt_contents COMA with_item .
+
+    $default  reduce using rule 56 (with_stmt_contents)
+
+
+state 316
+
+   58 with_item: id LEFT_P inside_brackets . RIGHT_P AS target
+
+    RIGHT_P  shift, and go to state 367
+
+
+state 317
+
+   62 inside_brackets: expression .
+   63                | expression . COMA inside_brackets
+
+    COMA  shift, and go to state 368
+
+    $default  reduce using rule 62 (inside_brackets)
+
+
+state 318
+
+   60 with_item: expression AS target .
+  167 target: target . DOT ID
+
+    DOT  shift, and go to state 123
+
+    $default  reduce using rule 60 (with_item)
+
+
+state 319
+
+  122 match_block: NEWLINE INDENT . case_statements DEDENT
+
+    CASE  shift, and go to state 14
+
+    case_statements  go to state 369
+    case_statement   go to state 36
+
+
+state 320
+
+  176 nonlocal_list: nonlocal_list COMA ID .
+
+    $default  reduce using rule 176 (nonlocal_list)
+
+
+state 321
+
+   45 default_parameter: ID ASSIGN . expression
+   46                  | ID ASSIGN . expression COLON types
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 370
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 322
+
+   48 non_default_parameter: ID COLON . types
+
+    NONE            shift, and go to state 371
+    INT_KEYWORD     shift, and go to state 372
+    FLOAT_KEYWORD   shift, and go to state 373
+    STRING_KEYWORD  shift, and go to state 374
+    BOOL_KEYWORD    shift, and go to state 375
+    LIST_KEYWORD    shift, and go to state 376
+
+    types  go to state 377
+
+
+state 323
+
+   26 function_def: DEF id LEFT_P parameters RIGHT_P . return_type block
+
+    ARROW  shift, and go to state 378
+
+    $default  reduce using rule 28 (return_type)
+
+    return_type  go to state 379
+
+
+state 324
+
+   39 default_parameters: default_parameter COMA . default_parameters
+   40                   | default_parameter COMA . non_default_parameters
+
+    ID  shift, and go to state 221
+
+    default_parameters      go to state 380
+    non_default_parameters  go to state 381
+    default_parameter       go to state 225
+    non_default_parameter   go to state 226
+
+
+state 325
+
+   42 non_default_parameters: non_default_parameter COMA . non_default_parameters
+   43                       | non_default_parameter COMA . default_parameters
+
+    ID  shift, and go to state 221
+
+    default_parameters      go to state 382
+    non_default_parameters  go to state 383
+    default_parameter       go to state 225
+    non_default_parameter   go to state 226
+
+
+state 326
+
+  114 args_list: args_list COMA expression .
+
+    $default  reduce using rule 114 (args_list)
+
+
+state 327
+
+   27 function_def: ASYNC DEF ID LEFT_P parameters . RIGHT_P return_type block
+
+    RIGHT_P  shift, and go to state 384
+
+
+state 328
+
+   82 for_statement: ASYNC FOR targets IN star_expressions . for_block
+
+    INDENT   shift, and go to state 201
+    NEWLINE  shift, and go to state 202
+
+    for_block  go to state 385
+
+
+state 329
+
+   51 with_statement: ASYNC WITH with_statement_body COLON if_block .
+
+    $default  reduce using rule 51 (with_statement)
+
+
+state 330
+
+  118 kwarg: ID ASSIGN . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 386
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 331
+
+  120 kwarg: DOUBLE_STAR expression .
+
+    $default  reduce using rule 120 (kwarg)
+
+
+state 332
+
+  119 kwarg: MULTIPLY expression .
+
+    $default  reduce using rule 119 (kwarg)
+
+
+state 333
+
+  107 arguments: LEFT_P args RIGHT_P .
+
+    $default  reduce using rule 107 (arguments)
+
+
+state 334
+
+  108 arguments: LEFT_P kwargs RIGHT_P .
+
+    $default  reduce using rule 108 (arguments)
+
+
+state 335
+
+  117 kwarg_list: kwarg_list COMA . kwarg
+
+    ID           shift, and go to state 336
+    DOUBLE_STAR  shift, and go to state 233
+    MULTIPLY     shift, and go to state 234
+
+    kwarg  go to state 387
+
+
+state 336
+
+  118 kwarg: ID . ASSIGN expression
+
+    ASSIGN  shift, and go to state 330
+
+
+state 337
+
+  109 arguments: args COMA kwargs .
+
+    $default  reduce using rule 109 (arguments)
+
+
+state 338
+
+   83 for_statement: FOR targets IN RANGE LEFT_P . INT COMA INT RIGHT_P for_block
+   84              | FOR targets IN RANGE LEFT_P . INT COMA INT COMA INT RIGHT_P for_block
+
+    INT  shift, and go to state 388
+
+
+state 339
+
+   87 star_expression: '*' bitwise_or .
+  209 bitwise_or: bitwise_or . '|' bitwise_xor
+
+    '|'  shift, and go to state 170
+
+    $default  reduce using rule 87 (star_expression)
+
+
+state 340
+
+   81 for_statement: FOR targets IN star_expressions for_block .
+
+    $default  reduce using rule 81 (for_statement)
+
+
+state 341
+
+   86 star_expressions: star_expression COMA . star_expressions
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '*'          shift, and go to state 242
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    star_expressions  go to state 389
+    star_expression   go to state 244
+    expression        go to state 245
+    disjunction       go to state 83
+    conjunction       go to state 84
+    inversion         go to state 85
+    comparison        go to state 86
+    bitwise_or        go to state 87
+    bitwise_xor       go to state 88
+    bitwise_and       go to state 89
+    shift_expr        go to state 90
+    sum               go to state 91
+    term              go to state 92
+    factor            go to state 93
+    power             go to state 94
+    atom              go to state 95
+
+
+state 342
+
+  137 if_stmt: function_call NEWLINE .
+
+    $default  reduce using rule 137 (if_stmt)
+
+
+state 343
+
+  133 if_block: INDENT if_stmts DEDENT .
+
+    $default  reduce using rule 133 (if_block)
+
+
+state 344
+
+  135 if_stmts: if_stmts if_stmt .
+
+    $default  reduce using rule 135 (if_stmts)
+
+
+state 345
+
+  136 if_stmt: assignment NEWLINE .
+
+    $default  reduce using rule 136 (if_stmt)
+
+
+state 346
+
+  132 if_block: NEWLINE INDENT if_stmts . DEDENT
+  135 if_stmts: if_stmts . if_stmt
+
+    DEDENT  shift, and go to state 390
+    DEF     shift, and go to state 1
+    ID      shift, and go to state 2
+    ASYNC   shift, and go to state 3
+    CLASS   shift, and go to state 5
+    FOR     shift, and go to state 7
+    IF      shift, and go to state 9
+    TRY     shift, and go to state 11
+    WHILE   shift, and go to state 12
+    WITH    shift, and go to state 15
+    MATCH   shift, and go to state 16
+    LEFT_P  shift, and go to state 18
+
+    function_def          go to state 247
+    function_call         go to state 248
+    with_statement        go to state 249
+    try_stmt              go to state 250
+    try1_stmt             go to state 28
+    try2_stmt             go to state 29
+    try3_stmt             go to state 30
+    while_statement       go to state 251
+    for_statement         go to state 252
+    class_def             go to state 253
+    match_statement       go to state 254
+    if_statement          go to state 255
+    if_stmt               go to state 344
+    assignment            go to state 258
+    single_assignment     go to state 39
+    multi_assignment      go to state 40
+    augmented_assignment  go to state 41
+    targets               go to state 42
+    target                go to state 43
+
+
+state 347
+
+  128 elif_statement: ELIF expression . if_block elif_statement
+  129               | ELIF expression . if_block else_statement
+
+    INDENT   shift, and go to state 155
+    NEWLINE  shift, and go to state 156
+
+    if_block  go to state 391
+
+
+state 348
+
+  131 else_statement: ELSE block .
+
+    $default  reduce using rule 131 (else_statement)
+
+
+state 349
+
+  179 expression: disjunction IF disjunction ELSE . expression
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    expression   go to state 392
+    disjunction  go to state 83
+    conjunction  go to state 84
+    inversion    go to state 85
+    comparison   go to state 86
+    bitwise_or   go to state 87
+    bitwise_xor  go to state 88
+    bitwise_and  go to state 89
+    shift_expr   go to state 90
+    sum          go to state 91
+    term         go to state 92
+    factor       go to state 93
+    power        go to state 94
+    atom         go to state 95
+
+
+state 350
+
+  207 isnot_bitwise_or: IS NOT bitwise_or .
+  209 bitwise_or: bitwise_or . '|' bitwise_xor
+
+    '|'  shift, and go to state 170
+
+    $default  reduce using rule 207 (isnot_bitwise_or)
+
+
+state 351
+
+  205 notin_bitwise_or: NOT IN bitwise_or .
+  209 bitwise_or: bitwise_or . '|' bitwise_xor
+
+    '|'  shift, and go to state 170
+
+    $default  reduce using rule 205 (notin_bitwise_or)
+
+
+state 352
+
+    3 block: NEWLINE INDENT stmts DEDENT .
+
+    $default  reduce using rule 3 (block)
+
+
+state 353
+
+   72 except_statement_plus_for_try2: EXCEPT MULTIPLY expression . op_as block
+   73                               | EXCEPT MULTIPLY expression . op_as COLON block except_statement_plus_for_try2
+
+    AS  shift, and go to state 355
+
+    $default  reduce using rule 74 (op_as)
+
+    op_as  go to state 393
+
+
+state 354
+
+   70 except_statement_plus_for_try1: EXCEPT op_expression_as block .
+   71                               | EXCEPT op_expression_as block . except_statement_plus_for_try1
+
+    EXCEPT  shift, and go to state 394
+
+    $default  reduce using rule 70 (except_statement_plus_for_try1)
+
+    except_statement_plus_for_try1  go to state 395
+
+
+state 355
+
+   75 op_as: AS . ID
+
+    ID  shift, and go to state 396
+
+
+state 356
+
+   77 op_expression_as: expression op_as .
+
+    $default  reduce using rule 77 (op_expression_as)
+
+
+state 357
+
+   79 op_finally: FINALLY . block
+
+    INDENT   shift, and go to state 98
+    NEWLINE  shift, and go to state 99
+
+    block  go to state 397
+
+
+state 358
+
+   67 try1_stmt: TRY block except_statement_plus_for_try1 else_statement op_finally .
+
+    $default  reduce using rule 67 (try1_stmt)
+
+
+state 359
+
+   68 try2_stmt: TRY block except_statement_plus_for_try2 else_statement op_finally .
+
+    $default  reduce using rule 68 (try2_stmt)
+
+
+state 360
+
+   95 for_stmt: BREAK NEWLINE .
+
+    $default  reduce using rule 95 (for_stmt)
+
+
+state 361
+
+   96 for_stmt: CONTINUE NEWLINE .
+
+    $default  reduce using rule 96 (for_stmt)
+
+
+state 362
+
+   94 for_stmt: function_call NEWLINE .
+
+    $default  reduce using rule 94 (for_stmt)
+
+
+state 363
+
+   90 for_block: INDENT for_stmts DEDENT .
+
+    $default  reduce using rule 90 (for_block)
+
+
+state 364
+
+   92 for_stmts: for_stmts for_stmt .
+
+    $default  reduce using rule 92 (for_stmts)
+
+
+state 365
+
+   93 for_stmt: assignment NEWLINE .
+
+    $default  reduce using rule 93 (for_stmt)
+
+
+state 366
+
+   89 for_block: NEWLINE INDENT for_stmts . DEDENT
+   92 for_stmts: for_stmts . for_stmt
+
+    DEDENT    shift, and go to state 398
+    ID        shift, and go to state 2
+    ASYNC     shift, and go to state 299
+    BREAK     shift, and go to state 300
+    CLASS     shift, and go to state 5
+    CONTINUE  shift, and go to state 301
+    FOR       shift, and go to state 7
+    IF        shift, and go to state 9
+    TRY       shift, and go to state 11
+    WITH      shift, and go to state 15
+    MATCH     shift, and go to state 16
+    LEFT_P    shift, and go to state 18
+
+    function_call         go to state 302
+    with_statement        go to state 303
+    try_stmt              go to state 304
+    try1_stmt             go to state 28
+    try2_stmt             go to state 29
+    try3_stmt             go to state 30
+    for_statement         go to state 305
+    for_stmt              go to state 364
+    class_def             go to state 308
+    match_statement       go to state 309
+    if_statement          go to state 310
+    assignment            go to state 311
+    single_assignment     go to state 39
+    multi_assignment      go to state 40
+    augmented_assignment  go to state 41
+    targets               go to state 42
+    target                go to state 43
+
+
+state 367
+
+   58 with_item: id LEFT_P inside_brackets RIGHT_P . AS target
+
+    AS  shift, and go to state 399
+
+
+state 368
+
+   63 inside_brackets: expression COMA . inside_brackets
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    $default  reduce using rule 61 (inside_brackets)
+
+    inside_brackets  go to state 400
+    expression       go to state 317
+    disjunction      go to state 83
+    conjunction      go to state 84
+    inversion        go to state 85
+    comparison       go to state 86
+    bitwise_or       go to state 87
+    bitwise_xor      go to state 88
+    bitwise_and      go to state 89
+    shift_expr       go to state 90
+    sum              go to state 91
+    term             go to state 92
+    factor           go to state 93
+    power            go to state 94
+    atom             go to state 95
+
+
+state 369
+
+  122 match_block: NEWLINE INDENT case_statements . DEDENT
+  124 case_statements: case_statements . case_statement
+
+    DEDENT  shift, and go to state 401
+    CASE    shift, and go to state 14
+
+    case_statement  go to state 119
+
+
+state 370
+
+   45 default_parameter: ID ASSIGN expression .
+   46                  | ID ASSIGN expression . COLON types
+
+    COLON  shift, and go to state 402
+
+    $default  reduce using rule 45 (default_parameter)
+
+
+state 371
+
+   35 types: NONE .
+
+    $default  reduce using rule 35 (types)
+
+
+state 372
+
+   30 types: INT_KEYWORD .
+
+    $default  reduce using rule 30 (types)
+
+
+state 373
+
+   31 types: FLOAT_KEYWORD .
+
+    $default  reduce using rule 31 (types)
+
+
+state 374
+
+   32 types: STRING_KEYWORD .
+
+    $default  reduce using rule 32 (types)
+
+
+state 375
+
+   33 types: BOOL_KEYWORD .
+
+    $default  reduce using rule 33 (types)
+
+
+state 376
+
+   34 types: LIST_KEYWORD .
+
+    $default  reduce using rule 34 (types)
+
+
+state 377
+
+   48 non_default_parameter: ID COLON types .
+
+    $default  reduce using rule 48 (non_default_parameter)
+
+
+state 378
+
+   29 return_type: ARROW . types
+
+    NONE            shift, and go to state 371
+    INT_KEYWORD     shift, and go to state 372
+    FLOAT_KEYWORD   shift, and go to state 373
+    STRING_KEYWORD  shift, and go to state 374
+    BOOL_KEYWORD    shift, and go to state 375
+    LIST_KEYWORD    shift, and go to state 376
+
+    types  go to state 403
+
+
+state 379
+
+   26 function_def: DEF id LEFT_P parameters RIGHT_P return_type . block
+
+    INDENT   shift, and go to state 98
+    NEWLINE  shift, and go to state 99
+
+    block  go to state 404
+
+
+state 380
+
+   39 default_parameters: default_parameter COMA default_parameters .
+
+    $default  reduce using rule 39 (default_parameters)
+
+
+state 381
+
+   40 default_parameters: default_parameter COMA non_default_parameters .
+
+    $default  reduce using rule 40 (default_parameters)
+
+
+state 382
+
+   43 non_default_parameters: non_default_parameter COMA default_parameters .
+
+    $default  reduce using rule 43 (non_default_parameters)
+
+
+state 383
+
+   42 non_default_parameters: non_default_parameter COMA non_default_parameters .
+
+    $default  reduce using rule 42 (non_default_parameters)
+
+
+state 384
+
+   27 function_def: ASYNC DEF ID LEFT_P parameters RIGHT_P . return_type block
+
+    ARROW  shift, and go to state 378
+
+    $default  reduce using rule 28 (return_type)
+
+    return_type  go to state 405
+
+
+state 385
+
+   82 for_statement: ASYNC FOR targets IN star_expressions for_block .
+
+    $default  reduce using rule 82 (for_statement)
+
+
+state 386
+
+  118 kwarg: ID ASSIGN expression .
+
+    $default  reduce using rule 118 (kwarg)
+
+
+state 387
+
+  117 kwarg_list: kwarg_list COMA kwarg .
+
+    $default  reduce using rule 117 (kwarg_list)
+
+
+state 388
+
+   83 for_statement: FOR targets IN RANGE LEFT_P INT . COMA INT RIGHT_P for_block
+   84              | FOR targets IN RANGE LEFT_P INT . COMA INT COMA INT RIGHT_P for_block
+
+    COMA  shift, and go to state 406
+
+
+state 389
+
+   86 star_expressions: star_expression COMA star_expressions .
+
+    $default  reduce using rule 86 (star_expressions)
+
+
+state 390
+
+  132 if_block: NEWLINE INDENT if_stmts DEDENT .
+
+    $default  reduce using rule 132 (if_block)
+
+
+state 391
+
+  128 elif_statement: ELIF expression if_block . elif_statement
+  129               | ELIF expression if_block . else_statement
+
+    ELIF  shift, and go to state 260
+    ELSE  shift, and go to state 261
+
+    $default  reduce using rule 130 (else_statement)
+
+    elif_statement  go to state 407
+    else_statement  go to state 408
+
+
+state 392
+
+  179 expression: disjunction IF disjunction ELSE expression .
+
+    $default  reduce using rule 179 (expression)
+
+
+state 393
+
+   72 except_statement_plus_for_try2: EXCEPT MULTIPLY expression op_as . block
+   73                               | EXCEPT MULTIPLY expression op_as . COLON block except_statement_plus_for_try2
+
+    INDENT   shift, and go to state 98
+    NEWLINE  shift, and go to state 99
+    COLON    shift, and go to state 409
+
+    block  go to state 410
+
+
+state 394
+
+   70 except_statement_plus_for_try1: EXCEPT . op_expression_as block
+   71                               | EXCEPT . op_expression_as block except_statement_plus_for_try1
+
+    INT          shift, and go to state 71
+    FLOAT        shift, and go to state 72
+    STRING       shift, and go to state 73
+    ID           shift, and go to state 74
+    TRUE_TOKEN   shift, and go to state 75
+    FALSE_TOKEN  shift, and go to state 76
+    NONE         shift, and go to state 77
+    NOT          shift, and go to state 78
+    '+'          shift, and go to state 79
+    '-'          shift, and go to state 80
+    '~'          shift, and go to state 81
+
+    $default  reduce using rule 76 (op_expression_as)
+
+    op_expression_as  go to state 294
+    expression        go to state 295
+    disjunction       go to state 83
+    conjunction       go to state 84
+    inversion         go to state 85
+    comparison        go to state 86
+    bitwise_or        go to state 87
+    bitwise_xor       go to state 88
+    bitwise_and       go to state 89
+    shift_expr        go to state 90
+    sum               go to state 91
+    term              go to state 92
+    factor            go to state 93
+    power             go to state 94
+    atom              go to state 95
+
+
+state 395
+
+   71 except_statement_plus_for_try1: EXCEPT op_expression_as block except_statement_plus_for_try1 .
+
+    $default  reduce using rule 71 (except_statement_plus_for_try1)
+
+
+state 396
+
+   75 op_as: AS ID .
+
+    $default  reduce using rule 75 (op_as)
+
+
+state 397
+
+   79 op_finally: FINALLY block .
+
+    $default  reduce using rule 79 (op_finally)
+
+
+state 398
+
+   89 for_block: NEWLINE INDENT for_stmts DEDENT .
+
+    $default  reduce using rule 89 (for_block)
+
+
+state 399
+
+   58 with_item: id LEFT_P inside_brackets RIGHT_P AS . target
+
+    ID      shift, and go to state 66
+    LEFT_P  shift, and go to state 18
+
+    target  go to state 411
+
+
+state 400
+
+   63 inside_brackets: expression COMA inside_brackets .
+
+    $default  reduce using rule 63 (inside_brackets)
+
+
+state 401
+
+  122 match_block: NEWLINE INDENT case_statements DEDENT .
+
+    $default  reduce using rule 122 (match_block)
+
+
+state 402
+
+   46 default_parameter: ID ASSIGN expression COLON . types
+
+    NONE            shift, and go to state 371
+    INT_KEYWORD     shift, and go to state 372
+    FLOAT_KEYWORD   shift, and go to state 373
+    STRING_KEYWORD  shift, and go to state 374
+    BOOL_KEYWORD    shift, and go to state 375
+    LIST_KEYWORD    shift, and go to state 376
+
+    types  go to state 412
+
+
+state 403
+
+   29 return_type: ARROW types .
+
+    $default  reduce using rule 29 (return_type)
+
+
+state 404
+
+   26 function_def: DEF id LEFT_P parameters RIGHT_P return_type block .
+
+    $default  reduce using rule 26 (function_def)
+
+
+state 405
+
+   27 function_def: ASYNC DEF ID LEFT_P parameters RIGHT_P return_type . block
+
+    INDENT   shift, and go to state 98
+    NEWLINE  shift, and go to state 99
+
+    block  go to state 413
+
+
+state 406
+
+   83 for_statement: FOR targets IN RANGE LEFT_P INT COMA . INT RIGHT_P for_block
+   84              | FOR targets IN RANGE LEFT_P INT COMA . INT COMA INT RIGHT_P for_block
+
+    INT  shift, and go to state 414
+
+
+state 407
+
+  128 elif_statement: ELIF expression if_block elif_statement .
+
+    $default  reduce using rule 128 (elif_statement)
+
+
+state 408
+
+  129 elif_statement: ELIF expression if_block else_statement .
+
+    $default  reduce using rule 129 (elif_statement)
+
+
+state 409
+
+   73 except_statement_plus_for_try2: EXCEPT MULTIPLY expression op_as COLON . block except_statement_plus_for_try2
+
+    INDENT   shift, and go to state 98
+    NEWLINE  shift, and go to state 99
+
+    block  go to state 415
+
+
+state 410
+
+   72 except_statement_plus_for_try2: EXCEPT MULTIPLY expression op_as block .
+
+    $default  reduce using rule 72 (except_statement_plus_for_try2)
+
+
+state 411
+
+   58 with_item: id LEFT_P inside_brackets RIGHT_P AS target .
+  167 target: target . DOT ID
+
+    DOT  shift, and go to state 123
+
+    $default  reduce using rule 58 (with_item)
+
+
+state 412
+
+   46 default_parameter: ID ASSIGN expression COLON types .
+
+    $default  reduce using rule 46 (default_parameter)
+
+
+state 413
+
+   27 function_def: ASYNC DEF ID LEFT_P parameters RIGHT_P return_type block .
+
+    $default  reduce using rule 27 (function_def)
+
+
+state 414
+
+   83 for_statement: FOR targets IN RANGE LEFT_P INT COMA INT . RIGHT_P for_block
+   84              | FOR targets IN RANGE LEFT_P INT COMA INT . COMA INT RIGHT_P for_block
+
+    COMA     shift, and go to state 416
+    RIGHT_P  shift, and go to state 417
+
+
+state 415
+
+   73 except_statement_plus_for_try2: EXCEPT MULTIPLY expression op_as COLON block . except_statement_plus_for_try2
+
+    EXCEPT  shift, and go to state 418
+
+    except_statement_plus_for_try2  go to state 419
+
+
+state 416
+
+   84 for_statement: FOR targets IN RANGE LEFT_P INT COMA INT COMA . INT RIGHT_P for_block
+
+    INT  shift, and go to state 420
+
+
+state 417
+
+   83 for_statement: FOR targets IN RANGE LEFT_P INT COMA INT RIGHT_P . for_block
+
+    INDENT   shift, and go to state 201
+    NEWLINE  shift, and go to state 202
+
+    for_block  go to state 421
+
+
+state 418
+
+   72 except_statement_plus_for_try2: EXCEPT . MULTIPLY expression op_as block
+   73                               | EXCEPT . MULTIPLY expression op_as COLON block except_statement_plus_for_try2
+
+    MULTIPLY  shift, and go to state 293
+
+
+state 419
+
+   73 except_statement_plus_for_try2: EXCEPT MULTIPLY expression op_as COLON block except_statement_plus_for_try2 .
+
+    $default  reduce using rule 73 (except_statement_plus_for_try2)
+
+
+state 420
+
+   84 for_statement: FOR targets IN RANGE LEFT_P INT COMA INT COMA INT . RIGHT_P for_block
+
+    RIGHT_P  shift, and go to state 422
+
+
+state 421
+
+   83 for_statement: FOR targets IN RANGE LEFT_P INT COMA INT RIGHT_P for_block .
+
+    $default  reduce using rule 83 (for_statement)
+
+
+state 422
+
+   84 for_statement: FOR targets IN RANGE LEFT_P INT COMA INT COMA INT RIGHT_P . for_block
+
+    INDENT   shift, and go to state 201
+    NEWLINE  shift, and go to state 202
+
+    for_block  go to state 423
+
+
+state 423
+
+   84 for_statement: FOR targets IN RANGE LEFT_P INT COMA INT COMA INT RIGHT_P for_block .
+
+    $default  reduce using rule 84 (for_statement)

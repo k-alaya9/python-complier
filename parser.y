@@ -63,6 +63,13 @@ PLUS_ASSIGN MINUS_ASSIGN TIMES_ASSIGN DIVIDE_ASSIGN MODULO_ASSIGN POWER_ASSIGN A
 
 
 
+
+
+
+
+
+
+
 %%
 
 /* Parser Grammar */
@@ -134,6 +141,7 @@ compound_stmt
        |match_statement {}
        |try_stmt {}
        |with_statement {}
+       |class_def  {}
        |class_def  {}
 
 
@@ -227,10 +235,14 @@ $$ = $1;
 
 // FUNCTION_CALL
 function_call     : ID LEFT_P args RIGHT_P {printf("function call \n");}
+function_call     : ID LEFT_P args RIGHT_P {printf("function call \n");}
 ;
 
 // with
+// with
 with_statement:
+            WITH with_statement_body if_block {printf("with statement \n");}
+            | ASYNC WITH with_statement_body COLON if_block {printf("ASYNC with statement \n");}
             WITH with_statement_body if_block {printf("with statement \n");}
             | ASYNC WITH with_statement_body COLON if_block {printf("ASYNC with statement \n");}
              ;
@@ -284,6 +296,10 @@ except_statement_plus_for_try2 : EXCEPT MULTIPLY expression op_as block
 ;
 op_as:
      |AS ID
+                       |EXCEPT MULTIPLY expression op_as COLON block except_statement_plus_for_try2
+;
+op_as:
+     |AS ID
 ;
 op_expression_as :
                  |expression op_as
@@ -292,13 +308,21 @@ op_finally:
            |FINALLY block
 ;
 
+
 //while
+
+while_statement: WHILE expression for_block { printf("while statement \n"); };
+
 
 while_statement: WHILE expression for_block { printf("while statement \n"); };
 
 //for
 
 for_statement:
+     FOR targets IN  star_expressions for_block  { printf("for statement \n"); }
+    | ASYNC FOR targets IN star_expressions for_block { printf("for ASYNC statement \n"); }
+    | FOR targets IN RANGE LEFT_P INT COMA INT RIGHT_P for_block { printf("for statement \n"); }
+    | FOR targets IN RANGE LEFT_P INT COMA INT COMA INT RIGHT_P for_block { printf("for statement \n"); }
      FOR targets IN  star_expressions for_block  { printf("for statement \n"); }
     | ASYNC FOR targets IN star_expressions for_block { printf("for ASYNC statement \n"); }
     | FOR targets IN RANGE LEFT_P INT COMA INT RIGHT_P for_block { printf("for statement \n"); }
@@ -337,6 +361,29 @@ for_stmt  :
 
 ;
 
+for_block: NEWLINE INDENT for_stmts DEDENT  {}
+             |INDENT for_stmts DEDENT  {}
+
+;
+
+for_stmts : for_stmt
+       | for_stmts for_stmt
+;
+
+for_stmt  :
+            assignment  NEWLINE {}
+            |function_call NEWLINE {}
+            |BREAK   NEWLINE      {}
+            |CONTINUE    NEWLINE    {}
+            |if_statement    {}
+            |for_statement
+            |match_statement {}
+            |try_stmt {}
+            |with_statement {}
+            |class_def  {}
+
+;
+
 //class
 
 class_def:
@@ -344,6 +391,7 @@ class_def:
 id:
 ID
 | id ID
+;
 ;
 
 arguments: /* empty, no arguments */ {}
@@ -355,9 +403,13 @@ arguments: /* empty, no arguments */ {}
 
 args:
     | args_list {}
+args:
+    | args_list {}
     ;
 
 args_list:
+
+    expression {}
 
     expression {}
     | args_list COMA expression {}
@@ -396,11 +448,15 @@ case_statement:
 if_statement:
             IF expression  if_block  elif_statement { printf("if statement \n"); }
             |IF expression  if_block  else_statement { printf("if statement \n"); }
+            IF expression  if_block  elif_statement { printf("if statement \n"); }
+            |IF expression  if_block  else_statement { printf("if statement \n"); }
       ;
 
 
 
 elif_statement:
+       ELIF expression  if_block  elif_statement
+       |ELIF expression  if_block  else_statement
        ELIF expression  if_block  elif_statement
        |ELIF expression  if_block  else_statement
 ;
@@ -409,6 +465,28 @@ else_statement:
         ELSE  block
 ;
 
+if_block: NEWLINE INDENT if_stmts DEDENT  {}
+             |INDENT if_stmts DEDENT  {}
+
+;
+
+if_stmts : if_stmt
+       | if_stmts if_stmt
+;
+
+if_stmt  :
+            assignment  NEWLINE {}
+            |function_call NEWLINE {}
+            |if_statement    {}
+            |function_def {}
+            | while_statement {}
+            |for_statement
+            |match_statement {}
+            |try_stmt {}
+            |with_statement {}
+            |class_def  {}
+
+;
 if_block: NEWLINE INDENT if_stmts DEDENT  {}
              |INDENT if_stmts DEDENT  {}
 

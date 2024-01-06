@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 int main(int argc, char **argv)
 {
       if (argc > 1){
@@ -10,6 +11,8 @@ int main(int argc, char **argv)
       yyparse();
       return 0;
 }
+=======
+>>>>>>> 6b2ff188baa52ed9e53f6d2ebe404f625e89e7c5
 
 prog:
    { /* for empty put % empty */}
