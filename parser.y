@@ -4,19 +4,33 @@
 #include <string.h>
 #include <ctype.h>
 int yydebug=1;
-FILE *yyin;
 void yyerror(const char *);
 extern int yylex();
 
 %}
-
+%code requires {
+      #include "python_ast_node.hpp"
+      #include <iostream>
+      #include <string>
+}
 
 %union {
      char* str_val;
          int int_val;
          float float_val;
-}
+	     AstNode* astNode;
+         IdentifierNode* idNode;
+	int d;
 
+}
+%{
+      extern int yylex();
+      extern int yyparse();
+      extern FILE *yyin;
+      void yyerror(const char *);
+      AstNode* root = NULL;
+      int n_nodes = 0;
+%}
 %error-verbose
 
 
@@ -24,20 +38,28 @@ extern int yylex();
 
 %token<int_val> INT INDENT DEDENT INDENT_ERROR NUMBER
 %token<float_val> FLOAT
-%token<str_val> DEF STRING ID MAIN TRUE_TOKEN FALSE_TOKEN NONE AND INT_KEYWORD FLOAT_KEYWORD STRING_KEYWORD BOOL_KEYWORD LIST_KEYWORD
-%token<str_val> AS ASSERT ASYNC AWAIT BREAK CLASS CONTINUE DEL INPUT
-%token<str_val> ELIF ELSE EXCEPT FINALLY FOR FROM GLOBAL IF
-%token<str_val> IMPORT IN IS LAMDA NONLOCAL NOT NULL_TOKEN OR
-%token<str_val> PASS RAISE RETURN TRY WHILE YIELD CASE PRINT WITH MATCH DOT COMMENT RANGE
 
+
+%type  <astNode> parameters function_def args   block stmt simple_stmt assignment stmts non_default_parameter non_default_parameters return_stmt
+
+
+%token<astNode> DEF STRING ID MAIN
+TRUE_TOKEN FALSE_TOKEN NONE AND INT_KEYWORD FLOAT_KEYWORD STRING_KEYWORD BOOL_KEYWORD
+LIST_KEYWORD AS ASSERT ASYNC AWAIT BREAK CLASS CONTINUE DEL INPUT ELIF ELSE EXCEPT FINALLY
+FOR FROM GLOBAL IF PASS RAISE RETURN TRY WHILE YIELD CASE PRINT WITH MATCH DOT
+COMMENT RANGE IMPORT IN IS LAMDA NONLOCAL NOT NULL_TOKEN OR PLUS NEWLINE
+GREATER_THAN LESS_THAN LESS_THAN_OR_EQUAL GREATER_THAN_OR_EQUAL AT DOUBLE_STAR ARROW
+NOT_EQUAL EQUAL FLOOR_DIVISION MODULUS EXPONENTIATION
+LEFT_BRACKET RIGHT_BRACKET LEFT_CURLY_BRACE RIGHT_CURLY_BRACE
+PLUS_ASSIGN MINUS_ASSIGN TIMES_ASSIGN DIVIDE_ASSIGN MODULO_ASSIGN POWER_ASSIGN AND_ASSIGN OR_ASSIGN XOR_ASSIGN LEFT_SHIFT_ASSIGN RIGHT_SHIFT_ASSIGN
 %token ASSIGN  MINUS MULTIPLY DIVIDE COLON COMA LEFT_P RIGHT_P
-%token<str_val> PLUS
-%token<str_val> NEWLINE
 
-%token<str_val> GREATER_THAN LESS_THAN LESS_THAN_OR_EQUAL GREATER_THAN_OR_EQUAL AT DOUBLE_STAR ARROW
-%token<str_val> NOT_EQUAL EQUAL FLOOR_DIVISION MODULUS EXPONENTIATION
-%token<str_val> LEFT_BRACKET RIGHT_BRACKET LEFT_CURLY_BRACE RIGHT_CURLY_BRACE
-%token<str_val> PLUS_ASSIGN MINUS_ASSIGN TIMES_ASSIGN DIVIDE_ASSIGN MODULO_ASSIGN POWER_ASSIGN AND_ASSIGN OR_ASSIGN XOR_ASSIGN LEFT_SHIFT_ASSIGN RIGHT_SHIFT_ASSIGN
+
+
+
+
+
+
 
 
 
@@ -45,40 +67,44 @@ extern int yylex();
 
 /* Parser Grammar */
 
-includ:
-   {}
-| statements {
-	printf("end of statement \n");YYACCEPT;
+include:
+function_def {}
+| stmts {
+
+	printf("end of statement \n");
 }
 ;
 
-statements  : statement { }
-            | statements NEWLINE statement { }
-            ;
-
-
-statement   : if_statement {}
-             |function_def{}
-             |assignment      {}
-             |function_call {}
-             |while_statement {}
-             |for_statement {}
-             |match_statement {}
-             |class_def{}
-             |try_stmt {}
-             |with_statement {}
-             ;
 
 block:
-    NEWLINE INDENT stmts DEDENT  {}
+    NEWLINE INDENT stmts DEDENT 
+    {
+$$=$3;
+    }
     |INDENT stmts DEDENT  {}
-
+    {
+$$=$2;
+    }
 ;
+
+
+
 stmts : stmt
+        {
+$$=$1;
+        }
       | stmts stmt
+      {
+$1->add($2); 
+$$ = $1;
+      }
 ;
 
-stmt  : simple_stmt NEWLINE {}
+stmt  : simple_stmt NEWLINE
+         {
+$$ = new StatementsNode("Statements");
+$$->add($1);
+        }       
       | compound_stmt {}
 ;
 
@@ -86,7 +112,11 @@ stmt  : simple_stmt NEWLINE {}
 simple_stmt:
 
       assignment      {}
-      |return_stmt     {}
+      |return_stmt     
+      {
+std::string name = "return statement" + std::to_string(n_nodes);
+++n_nodes;
+$$=$1; }
       |BREAK           {}
       |CONTINUE        {}
       |yield_statement      {}
@@ -98,12 +128,13 @@ simple_stmt:
 
 compound_stmt
       : if_statement    {}
-      |function_def {}
+      |function_def {printf("Function successfully parsed:\n");}
       | while_statement {}
        |for_statement {}
        |match_statement {}
        |try_stmt {}
        |with_statement {}
+       |class_def  {}
 
 
 
@@ -114,8 +145,28 @@ compound_stmt
 //function
 
 function_def:
-     DEF id LEFT_P  parameters RIGHT_P  return_type  block {printf("function statement \n");}
-    | ASYNC DEF ID LEFT_P parameters RIGHT_P   return_type  block {printf(" ASYNC function statement \n");}
+     DEF ID LEFT_P  parameters RIGHT_P  return_type  block
+      {
+        printf("Function successfully parsed:\n");
+std::string name = "func" + std::to_string(n_nodes);
+++n_nodes;
+IdentifierNode* idFunc = dynamic_cast<IdentifierNode*>($2);
+$$ = new FunctionNode(idFunc->value);
+$$->add($4);
+$$->add($7);
+root = $$;
+YYACCEPT;
+        }
+    | ASYNC DEF ID LEFT_P parameters RIGHT_P   return_type  block 
+     {
+std::string name = "func" + std::to_string(n_nodes);
+++n_nodes;
+IdentifierNode* idFunc = dynamic_cast<IdentifierNode*>($3);
+$$ = new FunctionNode(idFunc->value);
+$$->add($5);
+$$->add($8);
+root = $$;
+        }
 ;
 
 return_type :
@@ -130,20 +181,32 @@ types:
      | NONE
     ;
 
-parameters:
+parameters:/* empty params */ { $$ = NULL;}
           |default_parameters
-          |non_default_parameters
+          |non_default_parameters{ $$ = $1;}
 
 ;
 default_parameters:
-                    default_parameter COMA default_parameters
+                    default_parameter
+                   |default_parameter COMA default_parameters
                    |default_parameter COMA non_default_parameters
-                   |default_parameter
+                   
                    ;
 non_default_parameters:
                        non_default_parameter COMA non_default_parameters
+                       {
+$1->add($3);
+$$=$1;
+                       }
                        |non_default_parameter COMA default_parameters
+                       {
+
+                       }
                        |non_default_parameter
+                       {
+$$ = new Args("Args"); 
+$$->add($1);
+                       }
                      ;
 default_parameter:
                   ID ASSIGN expression
@@ -151,25 +214,28 @@ default_parameter:
                   ;
 non_default_parameter:
                   ID
+                  {
+std::string nname = "iden" + std::to_string(n_nodes);
+++n_nodes;
+$1->name=nname;
+$$ = $1;
+                  }
                   | ID  COLON types
                   ;
 
 
 
 // FUNCTION_CALL
-function_call     : ID LEFT_P args_list RIGHT_P {printf("function call \n");}
+function_call     : ID LEFT_P args RIGHT_P {printf("function call \n");}
 ;
 
-//with
+// with
 with_statement:
-            WITH with_statement_body  suite {printf("with statement \n");}
-            | ASYNC WITH with_statement_body COLON suite {printf("ASYNC with statement \n");}
+            WITH with_statement_body if_block {printf("with statement \n");}
+            | ASYNC WITH with_statement_body COLON if_block {printf("ASYNC with statement \n");}
              ;
 
-suite:
-         statements NEWLINE
-        |block
-             ;
+
 
 with_statement_body:
            with_statement_body COMA with_body
@@ -198,51 +264,77 @@ inside_brackets:
 
 
 //try
+try_stmt : try1_stmt{ printf("try statement \n"); }
+           | try2_stmt { printf("try statement \n"); }
+           | try3_stmt { printf("try statement \n"); }
+;
 
-try_stmt : try1_stmt | try2_stmt | try3_stmt
-;
 try1_stmt : TRY  block except_statement_plus_for_try1 else_statement op_finally
-;
-except_statement_plus_for_try1:
-                               EXCEPT op_expression_as block
-                               |EXCEPT op_expression_as block except_statement_plus_for_try1
 ;
 try2_stmt : TRY block except_statement_plus_for_try2 else_statement op_finally
 ;
+try3_stmt : TRY block FINALLY block
+;
+except_statement_plus_for_try1:
+                       EXCEPT op_expression_as block
+                       |EXCEPT op_expression_as block except_statement_plus_for_try1
+;
 except_statement_plus_for_try2 : EXCEPT MULTIPLY expression op_as block
-                       |EXCEPT MULTIPLY expression op_as COLON suite except_statement_plus_for_try2
+                       |EXCEPT MULTIPLY expression op_as COLON block except_statement_plus_for_try2
+;
+op_as:
+     |AS ID
 ;
 op_expression_as :
                  |expression op_as
 ;
-op_as:
-     | AS ID
-;
 op_finally:
            |FINALLY block
 ;
-try3_stmt : TRY block FINALLY block
-;
+
 //while
-while_statement: WHILE expression block { printf("while statement \n"); };
+
+while_statement: WHILE expression for_block { printf("while statement \n"); };
+
 //for
 
 for_statement:
-     FOR targets IN  star_expressions block  { printf("for statement \n"); }
-    | ASYNC FOR targets IN star_expressions block { printf("for ASYNC statement \n"); }
-    | FOR targets IN RANGE LEFT_P INT COMA INT RIGHT_P block { printf("for statement \n"); }
-    | FOR targets IN RANGE LEFT_P INT COMA INT COMA INT RIGHT_P block { printf("for statement \n"); }
+     FOR targets IN  star_expressions for_block  { printf("for statement \n"); }
+    | ASYNC FOR targets IN star_expressions for_block { printf("for ASYNC statement \n"); }
+    | FOR targets IN RANGE LEFT_P INT COMA INT RIGHT_P for_block { printf("for statement \n"); }
+    | FOR targets IN RANGE LEFT_P INT COMA INT COMA INT RIGHT_P for_block { printf("for statement \n"); }
 
 ;
 star_expressions:
      star_expression
     | star_expression COMA star_expressions
     ;
-
-
 star_expression:
     '*' bitwise_or
     | expression
+;
+
+for_block: NEWLINE INDENT for_stmts DEDENT  {}
+             |INDENT for_stmts DEDENT  {}
+
+;
+
+for_stmts : for_stmt
+       | for_stmts for_stmt
+;
+
+for_stmt  :
+            assignment  NEWLINE {}
+            |function_call NEWLINE {}
+            |BREAK   NEWLINE      {}
+            |CONTINUE    NEWLINE    {}
+            |if_statement    {}
+            |for_statement
+            |match_statement {}
+            |try_stmt {}
+            |with_statement {}
+            |class_def  {}
+
 ;
 
 //class
@@ -252,6 +344,7 @@ class_def:
 id:
 ID
 | id ID
+;
 
 arguments: /* empty, no arguments */ {}
     | LEFT_P args RIGHT_P {}
@@ -260,12 +353,13 @@ arguments: /* empty, no arguments */ {}
     |args
     ;
 
-args:|
-     args_list {}
+args:
+    | args_list {}
     ;
 
 args_list:
-     expression {}
+
+    expression {}
     | args_list COMA expression {}
     ;
 
@@ -300,21 +394,43 @@ case_statement:
 
 // IF
 if_statement:
-            IF expression  block  elif_statement { printf("if statement \n"); }
-            |IF expression  block  else_statement { printf("if statement \n"); }
+            IF expression  if_block  elif_statement { printf("if statement \n"); }
+            |IF expression  if_block  else_statement { printf("if statement \n"); }
       ;
 
 
 
 elif_statement:
-       ELIF expression  block  elif_statement
-       |ELIF expression  block  else_statement
+       ELIF expression  if_block  elif_statement
+       |ELIF expression  if_block  else_statement
 ;
 else_statement:
         |
         ELSE  block
 ;
 
+if_block: NEWLINE INDENT if_stmts DEDENT  {}
+             |INDENT if_stmts DEDENT  {}
+
+;
+
+if_stmts : if_stmt
+       | if_stmts if_stmt
+;
+
+if_stmt  :
+            assignment  NEWLINE {}
+            |function_call NEWLINE {}
+            |if_statement    {}
+            |function_def {}
+            | while_statement {}
+            |for_statement
+            |match_statement {}
+            |try_stmt {}
+            |with_statement {}
+            |class_def  {}
+
+;
 
 //assignment
 assignment:
@@ -368,6 +484,12 @@ target:
 //return
 return_stmt
       : RETURN expressions {  printf("return statement \n ");  }
+      |RETURN ID
+      {
+std::string name = "func" + std::to_string(n_nodes);
+++n_nodes;
+$$=new ReturnStatementNode($2);
+      }
 
 ;
 //yield
@@ -509,8 +631,8 @@ bitwise_and:
 
 
 shift_expr:
-     shift_expr '<<' sum /* << */ {}
-    | shift_expr '>>' sum /* >> */ { }
+     shift_expr '<<' sum  {}
+    | shift_expr '>>' sum  {}
     | sum
     ;
 
@@ -567,25 +689,28 @@ atom:
 
 %%
 
-
-
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-/*success("This is a valid python expression");*/
-      if (argc > 1){
-            for(int i=0;i<argc;i++)
-                  printf("value of argv[%d] = %s\n\n",i,argv[i]);
-                  yyin=fopen(argv[1],"r");
+ 
+     if (argc > 1){
+        for(int i=0;i<argc;i++)
+            // printf("value of argv[%d] = %s\n\n",i,argv[i]);
+            yyin=fopen(argv[1],"r");
       }
       else
-            yyin=stdin;
+        yyin=stdin;
+      
       yyparse();
+
+      // AST is constructed, you can print it now
+      if (root != NULL) {
+            AST ast(root);
+            ast.Print();
+      }
+      return 0;
 }
 
-/* int yyerror(const char* s) {
-//     fprintf(stderr, "Error: %s\n", s);
-//     return 1;
-// }*/
+
 
 void yyerror(const char *msg) {
       printf(" %s \n", msg);

@@ -1,5 +1,6 @@
+#line 1 "first.cpp"
 
-#line 2 "lex.yy.c"
+#line 3 "first.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -812,9 +813,9 @@ extern int yylex();
     // string buffer
     #define MAX_STR_CONST 256
     ////////////////////
-#line 815 "lex.yy.c"
+#line 816 "first.cpp"
 
-#line 817 "lex.yy.c"
+#line 818 "first.cpp"
 
 #define INITIAL 0
 #define DOUBLE_STRING 1
@@ -1042,7 +1043,7 @@ YY_DECL
 #line 161 "first.l"
 
 
-#line 1045 "lex.yy.c"
+#line 1046 "first.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1966,7 +1967,7 @@ YY_RULE_SETUP
 #line 479 "first.l"
 ECHO;
 	YY_BREAK
-#line 1969 "lex.yy.c"
+#line 1970 "first.cpp"
 
 	case YY_END_OF_BUFFER:
 		{

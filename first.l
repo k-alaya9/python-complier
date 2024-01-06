@@ -1,17 +1,24 @@
+%option noyywrap
 %{
     #include <stdio.h>
     #include <ctype.h>
     #include <stdlib.h>
     #include <string.h>
-    #include "parser.tab.h"
+    #include "parser.hpp"
+#include "python_ast_node.hpp"
+using namespace std;
+extern int yylex();
+
  int lno = 1;
  #define MAX_STR_CONST 256
  char string_buf[MAX_STR_CONST], comment_buf[MAX_STR_CONST];
  char *string_buf_ptr, *comment_buf_ptr;
 
+
 //Stack Definition
 #define Stack_SIZE 100
  void push(); void pop();
+
 
 
     int top = -1;
@@ -55,8 +62,6 @@
 
     // string buffer
     #define MAX_STR_CONST 256
-    char string_buf[MAX_STR_CONST];
-    char *string_buf_ptr;
     ////////////////////
 %}
 
@@ -152,8 +157,6 @@ newline \n
 %x INDENTSTATE
 %x DEDENTALLSTATE
 %x DEDENTSTATE
-
-
 
 %%
 
@@ -281,7 +284,12 @@ newline \n
 {NULL_TOKEN}       {yylval.str_val = strdup(yytext); return NULL_TOKEN;}
 {PRINT}            {yylval.str_val = strdup(yytext); return PRINT;}
 {FOR}              {yylval.str_val = strdup(yytext); return FOR;}
-{ID}                {yylval.str_val =strdup(yytext); return ID;}
+
+
+{ID}                { yylval.astNode = new IdentifierNode("IDENTIFIER", "Identifier", yytext); return ID;}
+
+
+
 {PLUS_ASSIGN}       {yylval.str_val=strdup(yytext);return PLUS_ASSIGN;}
 {MINUS_ASSIGN}      {yylval.str_val=strdup(yytext);return MINUS_ASSIGN;}
 {TIMES_ASSIGN}      {yylval.str_val=strdup(yytext);return TIMES_ASSIGN;}

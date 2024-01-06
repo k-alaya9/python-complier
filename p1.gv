@@ -1,0 +1,12 @@
+digraph G {
+        a [label="Declare Fun : a"]
+        a -> Args;
+        Args [label="Arguments"]
+        Args -> iden0;
+        iden0 [shape=box,label="Identifier: v"]
+        a -> Statements;
+        Statements [label="Block Statements"]
+        Statements -> ReturnStatement;
+        ReturnStatement [label="ReturnStatement"]
+        IDENTIFIER [shape=box,label="Identifier: x"]
+}

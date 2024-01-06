@@ -1,3 +1,2 @@
-match e:
-    case o:
-        return 8
+def a(v):
+    return v
