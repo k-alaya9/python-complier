@@ -613,13 +613,12 @@ public:
 // Composite node for representing binary expressions
 class BinaryExpressionNode : public AstNode {
 private:
-    char operation;
     AstNode* left;
     AstNode* right;
 
 public:
     BinaryExpressionNode(char op, AstNode* l, AstNode* r)
-        : operation(op), left(l), right(r) {}
+        :  left(l), right(r) {}
 
     void add(AstNode* node) override {
         if (!left)
@@ -631,9 +630,9 @@ public:
     }
 
     void print() const override {
-        std::cout << "\t" << "BinaryExpressionNode" << " [label=\"" << operation << "\"]" << std::endl;
+        std::cout << "\t" << "BinaryExpressionNode" << " [label=\"" << "operation" << "\"]" << std::endl;
         left->print();
-        std::cout << "\t" << "BinaryExpressionNode" << " [label=\"" << operation << "\"]" << std::endl;
+        std::cout << "\t" << "BinaryExpressionNode" << " [label=\"" << "operation" << "\"]" << std::endl;
         right->print();
     }
 
